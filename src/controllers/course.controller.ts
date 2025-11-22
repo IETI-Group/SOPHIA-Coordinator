@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { courseService } from '../services/course.service';
-import { validateParams } from '../utils/validation';
+import { courseService } from '../services/course.service.js';
+import { validateParams } from '../utils/validation.js';
 
 export class CourseController {
   // Courses

@@ -1,4 +1,4 @@
-import { COURSE_LEVEL, COURSE_STATUS } from '../common/enums';
+import { COURSE_LEVEL, COURSE_STATUS } from '../common/enums.js';
 
 type Json = Record<string, any>;
 

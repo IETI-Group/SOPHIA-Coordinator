@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { userService } from '../services/user.service';
-import { validateParams } from '../utils/validation';
+import { userService } from '../services/user.service.js';
+import { validateParams } from '../utils/validation.js';
 
 export class UserController {
   // Users

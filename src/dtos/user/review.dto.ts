@@ -1,4 +1,4 @@
-import { REVIEW_DISCRIMINANT } from '../common/enums';
+import { REVIEW_DISCRIMINANT } from '../common/enums.js';
 
 export interface ReviewInDTO {
   reviewerId: string;

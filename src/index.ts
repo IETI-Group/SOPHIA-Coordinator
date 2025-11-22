@@ -1,8 +1,8 @@
 import express, { type Application } from 'express';
 import morgan from 'morgan';
-import { env } from './config/env';
-import router from './routes';
-import { errorHandler } from './middlewares/error-handler';
+import { env } from './config/env.js';
+import router from './routes/index.js';
+import { errorHandler } from './middlewares/error-handler.js';
 
 const app: Application = express();
 
