@@ -3,7 +3,7 @@ import {
   DIFFICULTY_LEVEL,
   LEARNING_TECHNIQUE,
   LESSON_CONTENT_TYPE,
-} from '../common/enums';
+} from '../common/enums.js';
 
 type Json = Record<string, any>;
 

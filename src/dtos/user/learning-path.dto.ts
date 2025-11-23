@@ -1,4 +1,4 @@
-import { LEARNING_STYLES, PACE_PREFERENCE } from '../common/enums';
+import { LEARNING_STYLES, PACE_PREFERENCE } from '../common/enums.js';
 
 export interface LearningPathInDTO {
   primaryStyle: LEARNING_STYLES;

@@ -1,4 +1,4 @@
-import { VERIFICATION_STATUS } from '../common/enums';
+import { VERIFICATION_STATUS } from '../common/enums.js';
 
 export type InstructorInput = {
   instructorId: string;

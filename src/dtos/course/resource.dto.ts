@@ -1,4 +1,4 @@
-import { DISCRIMINANT_RESOURCE, RESOURCE_TYPE } from '../common/enums';
+import { DISCRIMINANT_RESOURCE, RESOURCE_TYPE } from '../common/enums.js';
 
 type Json = Record<string, any>;
 

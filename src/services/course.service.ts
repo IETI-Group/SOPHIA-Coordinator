@@ -1,5 +1,5 @@
-import { env } from '../config/env';
-import { HttpClientService } from './http-client.service';
+import { env } from '../config/env.js';
+import { HttpClientService } from './http-client.service.js';
 
 class CourseService {
   private httpClient: HttpClientService;
