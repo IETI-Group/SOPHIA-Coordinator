@@ -10,7 +10,7 @@ URL Base: `/api/v1/ai`
 
 ### 1. Chat con IA
 
-Interactúa con el asistente de IA. Soporta historial de conversación para respuestas conscientes del contexto (memoria).
+Interactúa con el asistente de IA. Soporta historial de conversación mediante tokens de contexto.
 
 **Endpoint:** `POST /chat`
 
@@ -19,48 +19,43 @@ Interactúa con el asistente de IA. Soporta historial de conversación para resp
 | Campo | Tipo | Requerido | Descripción |
 |-------|------|----------|-------------|
 | `message` | string | Sí | El mensaje actual que se envía a la IA. |
-| `history` | array | No | Lista de mensajes previos para dar contexto. |
+| `context` | number[] | No | Array de números (tokens) que representa el historial de la conversación. |
 
-**Estructura del Objeto Historial:**
+#### ¿Qué es el `context`?
+El campo `context` es un array de números que el modelo genera después de cada respuesta. Este array codifica toda la conversación previa. Para mantener la memoria del chat, debes guardar este array y enviarlo de vuelta en la siguiente petición.
+
+#### Ejemplo de Flujo de Conversación
+
+**Paso 1: Primera Pregunta (Sin contexto)**
 ```json
 {
-  "role": "user" | "assistant" | "system",
-  "content": "string"
+  "message": "¿Por qué el cielo es azul?"
 }
 ```
 
-#### ¿Qué es el `role`?
-El campo `role` indica quién dijo el mensaje en el historial, permitiendo a la IA entender el flujo de la conversación:
-*   **`user`**: Eres tú (el usuario). Representa las preguntas o entradas que has hecho anteriormente.
-*   **`assistant`**: Es la IA. Representa las respuestas que la IA te ha dado antes.
-*   **`system`**: (Opcional) Define el comportamiento general o personalidad de la IA.
-
-#### Ejemplo de Petición
-
-**Mensaje Simple (Sin memoria):**
+**Respuesta del Servidor:**
 ```json
 {
-  "message": "¿Cuál es la capital de Francia?"
+  "response": "El cielo es azul debido a la dispersión de Rayleigh...",
+  "context": [123, 456, 789, ...] // <--- Guarda esto
 }
 ```
 
-**Mensaje con Historial (Con memoria):**
+**Paso 2: Segunda Pregunta (Con contexto)**
 ```json
 {
-  "message": "Cuéntame más sobre su cultura.",
-  "history": [
-    {
-      "role": "user",
-      "content": "¿Cuál es la capital de Francia?"
-    },
-    {
-      "role": "assistant",
-      "content": "La capital de Francia es París."
-    }
-  ]
+  "message": "¿Y por qué se pone rojo al atardecer?",
+  "context": [123, 456, 789, ...] // <--- Envía lo que recibiste antes
 }
 ```
-*Nota: Al enviar el historial, la IA sabe que "su cultura" se refiere a la cultura de París.*
+
+**Respuesta del Servidor:**
+```json
+{
+  "response": "Al atardecer, la luz recorre más distancia...",
+  "context": [123, 456, 789, 1011, 1213, ...] // <--- Nuevo contexto actualizado
+}
+```
 
 #### Respuesta Exitosa
 
@@ -68,7 +63,8 @@ El campo `role` indica quién dijo el mensaje en el historial, permitiendo a la 
 
 ```json
 {
-  "response": "La cultura parisina es famosa por su arte, moda, gastronomía y arquitectura..."
+  "response": "Texto de la respuesta...",
+  "context": [1, 2, 3, ...]
 }
 ```
 

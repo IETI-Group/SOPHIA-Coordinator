@@ -1,9 +1,4 @@
-export interface ChatMessage {
-	role: "system" | "user" | "assistant";
-	content: string;
-}
-
 export interface ChatRequestDto {
-	message: string;
-	history?: ChatMessage[];
+  message: string;
+  context?: number[];
 }

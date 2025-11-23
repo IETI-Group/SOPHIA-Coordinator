@@ -9,24 +9,22 @@ class AIService {
 		this.ollama = new Ollama({ host: env.ollamaHost });
 	}
 
-	async chat(data: ChatRequestDto) {
-		try {
-			const messages = data.history ? [...data.history] : [];
-			messages.push({ role: "user", content: data.message });
-
-			const response = await this.ollama.chat({
-				model: env.ollamaModel,
-				messages: messages,
-			});
-			return { response: response.message.content };
-		} catch (error) {
-			throw new Error(
-				`AI Service Error: ${error instanceof Error ? error.message : "Unknown error"}`,
-			);
-		}
-	}
-
-	async generateCourseStructure(data: CourseAssistantDto) {
+  async chat(data: ChatRequestDto) {
+    try {
+      const response = await this.ollama.generate({
+        model: env.ollamaModel,
+        prompt: data.message,
+        context: data.context || [],
+        stream: false,
+      });
+      return { 
+        response: response.response,
+        context: response.context 
+      };
+    } catch (error) {
+      throw new Error(`AI Service Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }	async generateCourseStructure(data: CourseAssistantDto) {
 		const prompt = `
       Act as a Senior Curriculum Developer and Instructional Designer. Your goal is to create a professional, high-quality course outline optimized for student learning and engagement.
 
