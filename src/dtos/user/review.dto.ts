@@ -1,17 +1,17 @@
-import { REVIEW_DISCRIMINANT } from '../common/enums';
+import type { REVIEW_DISCRIMINANT } from "../common/enums";
 
 export interface ReviewInDTO {
-  reviewerId: string;
-  reviewedId: string;
-  discriminant: REVIEW_DISCRIMINANT;
-  rate: number;
-  recommended: boolean;
-  comments?: string;
+	reviewerId: string;
+	reviewedId: string;
+	discriminant: REVIEW_DISCRIMINANT;
+	rate: number;
+	recommended: boolean;
+	comments?: string;
 }
 
 export interface ReviewOutDTO extends ReviewInDTO {
-  reviewerId: string;
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
+	reviewerId: string;
+	id: string;
+	createdAt: Date;
+	updatedAt: Date;
 }
