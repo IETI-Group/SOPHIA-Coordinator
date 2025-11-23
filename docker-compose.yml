@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: sophia-coordinator-app
+    ports:
+      - ${PORT}:80
+    environment:
+      - NODE_ENV=production
+      - PORT=${PORT}
+      - USER_SERVICE_URL=${USER_SERVICE_URL}
+      - COURSE_SERVICE_URL=${COURSE_SERVICE_URL}
+      - SERVICE_TIMEOUT=${SERVICE_TIMEOUT}
+    restart: unless-stopped
