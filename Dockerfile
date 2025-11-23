@@ -24,12 +24,6 @@ RUN pnpm install --frozen-lockfile --prod
 
 COPY --from=base /app/dist ./dist
 
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001 && \
-    chown -R nodejs:nodejs /app
-
-USER nodejs
-
 EXPOSE 80
 
 ENV NODE_ENV=production
