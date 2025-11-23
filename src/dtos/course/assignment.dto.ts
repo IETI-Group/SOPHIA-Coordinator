@@ -1,4 +1,4 @@
-import { ASSIGNMENT_TYPE, SUBMISSION_STATUS } from '../common/enums';
+import { ASSIGNMENT_TYPE, SUBMISSION_STATUS } from '../common/enums.js';
 
 export interface AssignmentLessonInDTO {
   lessonId: string;

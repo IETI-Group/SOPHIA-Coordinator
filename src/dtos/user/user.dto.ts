@@ -1,4 +1,4 @@
-import { ROLE } from '../common/enums';
+import { ROLE } from '../common/enums.js';
 
 export interface UserInDTO {
   email: string;

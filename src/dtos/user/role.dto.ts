@@ -1,4 +1,4 @@
-import { ROLE, ROLE_STATUS } from '../common/enums';
+import { ROLE, ROLE_STATUS } from '../common/enums.js';
 
 export type RoleInput = {
   name: ROLE;
