@@ -23,9 +23,6 @@ importers:
       morgan:
         specifier: ^1.10.0
         version: 1.10.1
-      ollama:
-        specifier: ^0.6.3
-        version: 0.6.3
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.3.7
@@ -1140,9 +1137,6 @@ packages:
     resolution: {integrity: sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==}
     engines: {node: '>= 0.4'}
 
-  ollama@0.6.3:
-    resolution: {integrity: sha512-KEWEhIqE5wtfzEIZbDCLH51VFZ6Z3ZSa6sIOg/E/tBV8S51flyqBOXi+bRxlOYKDf8i327zG9eSTb8IJxvm3Zg==}
-
   on-finished@2.3.0:
     resolution: {integrity: sha512-ikqdkGAAyf/X/gPhXGvfgAytDZtDbr+bkNUJ0N9h5MI/dmdgCs3l6hoHrcUv41sRKew3jIwrp4qQDXiK99Utww==}
     engines: {node: '>= 0.8'}
@@ -1488,9 +1482,6 @@ packages:
         optional: true
       jsdom:
         optional: true
-
-  whatwg-fetch@3.6.20:
-    resolution: {integrity: sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==}
 
   why-is-node-running@2.3.0:
     resolution: {integrity: sha512-hUrmaWBdVDcxvYqnyh09zunKzROWjbZTiNy8dBEjkS7ehEDQibXJ7XvlmtbwuTclUiIyN+CyXQD4Vmko8fNm8w==}
@@ -2543,10 +2534,6 @@ snapshots:
 
   object-inspect@1.13.4: {}
 
-  ollama@0.6.3:
-    dependencies:
-      whatwg-fetch: 3.6.20
-
   on-finished@2.3.0:
     dependencies:
       ee-first: 1.1.1
@@ -2890,8 +2877,6 @@ snapshots:
       - terser
       - tsx
       - yaml
-
-  whatwg-fetch@3.6.20: {}
 
   why-is-node-running@2.3.0:
     dependencies:

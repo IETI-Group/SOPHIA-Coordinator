@@ -1,55 +1,32 @@
-import { Ollama } from "ollama";
 import { env } from "../config/env";
 import type { ChatRequestDto, CourseAssistantDto } from "../dtos/ai";
+import { HttpClientService } from "./http-client.service";
 
 class AIService {
-	private ollama: Ollama;
+	private httpClient: HttpClientService;
 
 	constructor() {
-		this.ollama = new Ollama({ host: env.ollamaHost });
+		this.httpClient = new HttpClientService(env.aiServiceUrl);
 	}
 
-  async chat(data: ChatRequestDto) {
-    try {
-      const response = await this.ollama.generate({
-        model: env.ollamaModel,
-        prompt: data.message,
-        context: data.context || [],
-        stream: false,
-      });
-      return { 
-        response: response.response,
-        context: response.context 
-      };
-    } catch (error) {
-      throw new Error(`AI Service Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  }	async generateCourseStructure(data: CourseAssistantDto) {
-		const prompt = `
-      Act as a Senior Curriculum Developer and Instructional Designer. Your goal is to create a professional, high-quality course outline optimized for student learning and engagement.
+	async chat(data: ChatRequestDto) {
+		return this.httpClient.post("/ai/chat", data);
+	}
 
-      Course Concept: "${data.idea}"
-      Structural Guidelines: "${data.guide}"
+	async generateCourseStructure(data: CourseAssistantDto) {
+		return this.httpClient.post("/ai/course-assistant", data);
+	}
 
-      Please design a detailed syllabus that:
-      1. Organizes content into logical Sections and Lessons.
-      2. Ensures a progressive learning path suitable for the target audience.
-      3. Maximizes pedagogical effectiveness.
+	async listChats(queryParams?: any) {
+		return this.httpClient.get("/chats", { params: queryParams });
+	}
 
-      Return ONLY the structured course outline, ready for implementation.
-    `;
+	async getChatHistory(chatId: string) {
+		return this.httpClient.get(`/chats/${chatId}`);
+	}
 
-		try {
-			const response = await this.ollama.chat({
-				model: env.ollamaModel,
-				messages: [{ role: "user", content: prompt }],
-			});
-			return { response: response.message.content };
-		} catch (error) {
-			throw new Error(
-				`AI Service Error: ${error instanceof Error ? error.message : "Unknown error"}`,
-			);
-		}
+	async deleteChat(chatId: string) {
+		return this.httpClient.delete(`/chats/${chatId}`);
 	}
 }
 

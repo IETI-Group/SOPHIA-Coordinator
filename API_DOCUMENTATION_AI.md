@@ -20,6 +20,7 @@ Interactúa con el asistente de IA. Soporta historial de conversación mediante 
 |-------|------|----------|-------------|
 | `message` | string | Sí | El mensaje actual que se envía a la IA. |
 | `context` | number[] | No | Array de números (tokens) que representa el historial de la conversación. |
+| `model` | string | No | El modelo de IA a utilizar (ej: `llama3.2`, `mistral`). Si no se envía, usa el configurado por defecto. |
 
 #### ¿Qué es el `context`?
 El campo `context` es un array de números que el modelo genera después de cada respuesta. Este array codifica toda la conversación previa. Para mantener la memoria del chat, debes guardar este array y enviarlo de vuelta en la siguiente petición.
@@ -93,6 +94,7 @@ Genera un esquema de curso estructurado y profesional basado en una idea y pauta
 |-------|------|----------|-------------|
 | `idea` | string | Sí | El concepto central o tema del curso. |
 | `guide` | string | Sí | Pautas estructurales, audiencia objetivo o requisitos específicos. |
+| `model` | string | No | El modelo de IA a utilizar (ej: `llama3.2`, `mistral`). Si no se envía, usa el configurado por defecto. |
 
 #### Ejemplo de Petición
 
