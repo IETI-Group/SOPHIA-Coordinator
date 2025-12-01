@@ -140,16 +140,9 @@ export class CourseController {
 
 	async getLessonById(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (
-				!validateParams(
-					{ sectionId: req.params.sectionId, lessonId: req.params.lessonId },
-					res,
-				)
-			)
-				return;
+			if (!validateParams({ id: req.params.id }, res)) return;
 			const response = await courseService.getLessonById(
-				req.params.sectionId!,
-				req.params.lessonId!,
+				req.params.id!,
 				req.query,
 			);
 			res.json(response.data);
@@ -173,16 +166,9 @@ export class CourseController {
 
 	async updateLesson(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (
-				!validateParams(
-					{ sectionId: req.params.sectionId, lessonId: req.params.lessonId },
-					res,
-				)
-			)
-				return;
+			if (!validateParams({ id: req.params.id }, res)) return;
 			const response = await courseService.updateLesson(
-				req.params.sectionId!,
-				req.params.lessonId!,
+				req.params.id!,
 				req.body,
 			);
 			res.json(response.data);
@@ -193,17 +179,71 @@ export class CourseController {
 
 	async deleteLesson(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (
-				!validateParams(
-					{ sectionId: req.params.sectionId, lessonId: req.params.lessonId },
-					res,
-				)
-			)
-				return;
-			const response = await courseService.deleteLesson(
-				req.params.sectionId!,
+			if (!validateParams({ id: req.params.id }, res)) return;
+			const response = await courseService.deleteLesson(req.params.id!);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	// Lesson Contents
+	async getLessonContents(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (!validateParams({ lessonId: req.params.lessonId }, res)) return;
+			const response = await courseService.getLessonContents(
 				req.params.lessonId!,
+				req.query,
 			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async getContentById(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (!validateParams({ id: req.params.id }, res)) return;
+			const response = await courseService.getContentById(
+				req.params.id!,
+				req.query,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async createLessonContent(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (!validateParams({ lessonId: req.params.lessonId }, res)) return;
+			const response = await courseService.createLessonContent(
+				req.params.lessonId!,
+				req.body,
+			);
+			res.status(201).json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async updateContent(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (!validateParams({ id: req.params.id }, res)) return;
+			const response = await courseService.updateContent(
+				req.params.id!,
+				req.body,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async deleteContent(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (!validateParams({ id: req.params.id }, res)) return;
+			const response = await courseService.deleteContent(req.params.id!);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -226,16 +266,9 @@ export class CourseController {
 
 	async getQuizById(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (
-				!validateParams(
-					{ sectionId: req.params.sectionId, quizId: req.params.quizId },
-					res,
-				)
-			)
-				return;
+			if (!validateParams({ id: req.params.id }, res)) return;
 			const response = await courseService.getQuizById(
-				req.params.sectionId!,
-				req.params.quizId!,
+				req.params.id!,
 				req.query,
 			);
 			res.json(response.data);
@@ -259,18 +292,8 @@ export class CourseController {
 
 	async updateQuiz(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (
-				!validateParams(
-					{ sectionId: req.params.sectionId, quizId: req.params.quizId },
-					res,
-				)
-			)
-				return;
-			const response = await courseService.updateQuiz(
-				req.params.sectionId!,
-				req.params.quizId!,
-				req.body,
-			);
+			if (!validateParams({ id: req.params.id }, res)) return;
+			const response = await courseService.updateQuiz(req.params.id!, req.body);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -279,17 +302,8 @@ export class CourseController {
 
 	async deleteQuiz(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (
-				!validateParams(
-					{ sectionId: req.params.sectionId, quizId: req.params.quizId },
-					res,
-				)
-			)
-				return;
-			const response = await courseService.deleteQuiz(
-				req.params.sectionId!,
-				req.params.quizId!,
-			);
+			if (!validateParams({ id: req.params.id }, res)) return;
+			const response = await courseService.deleteQuiz(req.params.id!);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -559,16 +573,9 @@ export class CourseController {
 
 	async getAISpecById(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (
-				!validateParams(
-					{ lessonId: req.params.lessonId, specId: req.params.specId },
-					res,
-				)
-			)
-				return;
+			if (!validateParams({ id: req.params.id }, res)) return;
 			const response = await courseService.getAISpecById(
-				req.params.lessonId!,
-				req.params.specId!,
+				req.params.id!,
 				req.query,
 			);
 			res.json(response.data);
@@ -592,16 +599,9 @@ export class CourseController {
 
 	async updateAISpec(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (
-				!validateParams(
-					{ lessonId: req.params.lessonId, specId: req.params.specId },
-					res,
-				)
-			)
-				return;
+			if (!validateParams({ id: req.params.id }, res)) return;
 			const response = await courseService.updateAISpec(
-				req.params.lessonId!,
-				req.params.specId!,
+				req.params.id!,
 				req.body,
 			);
 			res.json(response.data);
@@ -612,17 +612,8 @@ export class CourseController {
 
 	async deleteAISpec(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (
-				!validateParams(
-					{ lessonId: req.params.lessonId, specId: req.params.specId },
-					res,
-				)
-			)
-				return;
-			const response = await courseService.deleteAISpec(
-				req.params.lessonId!,
-				req.params.specId!,
-			);
+			if (!validateParams({ id: req.params.id }, res)) return;
+			const response = await courseService.deleteAISpec(req.params.id!);
 			res.json(response.data);
 		} catch (error) {
 			next(error);

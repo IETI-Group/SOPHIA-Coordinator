@@ -58,8 +58,8 @@ class CourseService {
 		});
 	}
 
-	async getLessonById(sectionId: string, lessonId: string, queryParams?: any) {
-		return this.httpClient.get(`/sections/${sectionId}/lessons/${lessonId}`, {
+	async getLessonById(lessonId: string, queryParams?: any) {
+		return this.httpClient.get(`/lessons/${lessonId}`, {
 			params: queryParams,
 		});
 	}
@@ -68,15 +68,37 @@ class CourseService {
 		return this.httpClient.post(`/sections/${sectionId}/lessons`, body);
 	}
 
-	async updateLesson(sectionId: string, lessonId: string, body: any) {
-		return this.httpClient.put(
-			`/sections/${sectionId}/lessons/${lessonId}`,
-			body,
-		);
+	async updateLesson(lessonId: string, body: any) {
+		return this.httpClient.put(`/lessons/${lessonId}`, body);
 	}
 
-	async deleteLesson(sectionId: string, lessonId: string) {
-		return this.httpClient.delete(`/sections/${sectionId}/lessons/${lessonId}`);
+	async deleteLesson(lessonId: string) {
+		return this.httpClient.delete(`/lessons/${lessonId}`);
+	}
+
+	// Lesson Contents endpoints
+	async getLessonContents(lessonId: string, queryParams?: any) {
+		return this.httpClient.get(`/lessons/${lessonId}/contents`, {
+			params: queryParams,
+		});
+	}
+
+	async getContentById(contentId: string, queryParams?: any) {
+		return this.httpClient.get(`/contents/${contentId}`, {
+			params: queryParams,
+		});
+	}
+
+	async createLessonContent(lessonId: string, body: any) {
+		return this.httpClient.post(`/lessons/${lessonId}/contents`, body);
+	}
+
+	async updateContent(contentId: string, body: any) {
+		return this.httpClient.put(`/contents/${contentId}`, body);
+	}
+
+	async deleteContent(contentId: string) {
+		return this.httpClient.delete(`/contents/${contentId}`);
 	}
 
 	// Quizzes endpoints
@@ -86,8 +108,8 @@ class CourseService {
 		});
 	}
 
-	async getQuizById(sectionId: string, quizId: string, queryParams?: any) {
-		return this.httpClient.get(`/sections/${sectionId}/quizzes/${quizId}`, {
+	async getQuizById(quizId: string, queryParams?: any) {
+		return this.httpClient.get(`/quizzes/${quizId}`, {
 			params: queryParams,
 		});
 	}
@@ -96,15 +118,12 @@ class CourseService {
 		return this.httpClient.post(`/sections/${sectionId}/quizzes`, body);
 	}
 
-	async updateQuiz(sectionId: string, quizId: string, body: any) {
-		return this.httpClient.put(
-			`/sections/${sectionId}/quizzes/${quizId}`,
-			body,
-		);
+	async updateQuiz(quizId: string, body: any) {
+		return this.httpClient.put(`/quizzes/${quizId}`, body);
 	}
 
-	async deleteQuiz(sectionId: string, quizId: string) {
-		return this.httpClient.delete(`/sections/${sectionId}/quizzes/${quizId}`);
+	async deleteQuiz(quizId: string) {
+		return this.httpClient.delete(`/quizzes/${quizId}`);
 	}
 
 	// Assignments endpoints
@@ -208,8 +227,8 @@ class CourseService {
 		});
 	}
 
-	async getAISpecById(lessonId: string, specId: string, queryParams?: any) {
-		return this.httpClient.get(`/lessons/${lessonId}/ai-specs/${specId}`, {
+	async getAISpecById(specId: string, queryParams?: any) {
+		return this.httpClient.get(`/ai-specs/${specId}`, {
 			params: queryParams,
 		});
 	}
@@ -218,12 +237,12 @@ class CourseService {
 		return this.httpClient.post(`/lessons/${lessonId}/ai-specs`, body);
 	}
 
-	async updateAISpec(lessonId: string, specId: string, body: any) {
-		return this.httpClient.put(`/lessons/${lessonId}/ai-specs/${specId}`, body);
+	async updateAISpec(specId: string, body: any) {
+		return this.httpClient.put(`/ai-specs/${specId}`, body);
 	}
 
-	async deleteAISpec(lessonId: string, specId: string) {
-		return this.httpClient.delete(`/lessons/${lessonId}/ai-specs/${specId}`);
+	async deleteAISpec(specId: string) {
+		return this.httpClient.delete(`/ai-specs/${specId}`);
 	}
 }
 

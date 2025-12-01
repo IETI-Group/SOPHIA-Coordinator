@@ -43,7 +43,7 @@ router.get(
 	courseController.getLessons.bind(courseController),
 );
 router.get(
-	"/sections/:sectionId/lessons/:lessonId",
+	"/lessons/:id",
 	courseController.getLessonById.bind(courseController),
 );
 router.post(
@@ -51,12 +51,34 @@ router.post(
 	courseController.createLesson.bind(courseController),
 );
 router.put(
-	"/sections/:sectionId/lessons/:lessonId",
+	"/lessons/:id",
 	courseController.updateLesson.bind(courseController),
 );
 router.delete(
-	"/sections/:sectionId/lessons/:lessonId",
+	"/lessons/:id",
 	courseController.deleteLesson.bind(courseController),
+);
+
+// Lesson Contents routes
+router.get(
+	"/lessons/:lessonId/contents",
+	courseController.getLessonContents.bind(courseController),
+);
+router.get(
+	"/contents/:id",
+	courseController.getContentById.bind(courseController),
+);
+router.post(
+	"/lessons/:lessonId/contents",
+	courseController.createLessonContent.bind(courseController),
+);
+router.put(
+	"/contents/:id",
+	courseController.updateContent.bind(courseController),
+);
+router.delete(
+	"/contents/:id",
+	courseController.deleteContent.bind(courseController),
 );
 
 // Quizzes routes
@@ -65,7 +87,7 @@ router.get(
 	courseController.getQuizzes.bind(courseController),
 );
 router.get(
-	"/sections/:sectionId/quizzes/:quizId",
+	"/quizzes/:id",
 	courseController.getQuizById.bind(courseController),
 );
 router.post(
@@ -73,11 +95,11 @@ router.post(
 	courseController.createQuiz.bind(courseController),
 );
 router.put(
-	"/sections/:sectionId/quizzes/:quizId",
+	"/quizzes/:id",
 	courseController.updateQuiz.bind(courseController),
 );
 router.delete(
-	"/sections/:sectionId/quizzes/:quizId",
+	"/quizzes/:id",
 	courseController.deleteQuiz.bind(courseController),
 );
 
@@ -158,7 +180,7 @@ router.get(
 	courseController.getAISpecs.bind(courseController),
 );
 router.get(
-	"/lessons/:lessonId/ai-specs/:specId",
+	"/ai-specs/:id",
 	courseController.getAISpecById.bind(courseController),
 );
 router.post(
@@ -166,11 +188,11 @@ router.post(
 	courseController.createAISpec.bind(courseController),
 );
 router.put(
-	"/lessons/:lessonId/ai-specs/:specId",
+	"/ai-specs/:id",
 	courseController.updateAISpec.bind(courseController),
 );
 router.delete(
-	"/lessons/:lessonId/ai-specs/:specId",
+	"/ai-specs/:id",
 	courseController.deleteAISpec.bind(courseController),
 );
 
