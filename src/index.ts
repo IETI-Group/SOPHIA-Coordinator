@@ -33,6 +33,14 @@ app.use((req, res, next) => {
 	next();
 });
 
+// Health check
+app.use("/", (_req, res) => {
+	res.json({
+		status: "UP",
+		timestamp: new Date().toISOString(),
+	});
+});
+
 // Routes
 app.use("/api/v1", router);
 
