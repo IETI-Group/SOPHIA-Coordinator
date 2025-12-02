@@ -1,12 +1,21 @@
 import type { NextFunction, Request, Response } from "express";
-import { userService } from "../services/user.service";
-import { validateParams } from "../utils/validation";
+import { userService } from "../services/user.service.js";
+import { validateParams } from "../utils/validation.js";
 
 export class UserController {
+	// Función para construir la config de request con headers y query
+	private buildRequestConfig(req: Request) {
+		return {
+			queryParams: req.query,
+			headers: req.headers as Record<string, string>,
+		};
+	}
+
 	// Users
 	async getUsers(req: Request, res: Response, next: NextFunction) {
 		try {
-			const response = await userService.getUsers(req.query);
+			const { queryParams, headers } = this.buildRequestConfig(req);
+			const response = await userService.getUsers(queryParams, headers);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -20,7 +29,8 @@ export class UserController {
 				res.status(400).json({ error: "Missing id parameter" });
 				return;
 			}
-			const response = await userService.getUserById(id, req.query);
+			const { queryParams, headers } = this.buildRequestConfig(req);
+			const response = await userService.getUserById(id, queryParams, headers);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -29,10 +39,16 @@ export class UserController {
 
 	async getUserByEmail(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ email: req.params.email }, res)) return;
+			if (
+				!validateParams({ email: req.params.email }, res) ||
+				!req.params.email
+			)
+				return;
+			const { queryParams, headers } = this.buildRequestConfig(req);
 			const response = await userService.getUserByEmail(
-				req.params.email!,
-				req.query,
+				req.params.email,
+				queryParams,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -42,7 +58,12 @@ export class UserController {
 
 	async getUsersBatch(req: Request, res: Response, next: NextFunction) {
 		try {
-			const response = await userService.getUsersBatch(req.body, req.query);
+			const { queryParams, headers } = this.buildRequestConfig(req);
+			const response = await userService.getUsersBatch(
+				req.body,
+				queryParams,
+				headers,
+			);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -51,7 +72,8 @@ export class UserController {
 
 	async createUser(req: Request, res: Response, next: NextFunction) {
 		try {
-			const response = await userService.createUser(req.body);
+			const { headers } = this.buildRequestConfig(req);
+			const response = await userService.createUser(req.body, headers);
 			res.status(201).json(response.data);
 		} catch (error) {
 			next(error);
@@ -60,8 +82,13 @@ export class UserController {
 
 	async updateUser(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ id: req.params.id }, res)) return;
-			const response = await userService.updateUser(req.params.id!, req.body);
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const { headers } = this.buildRequestConfig(req);
+			const response = await userService.updateUser(
+				req.params.id,
+				req.body,
+				headers,
+			);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -70,8 +97,9 @@ export class UserController {
 
 	async deleteUser(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ id: req.params.id }, res)) return;
-			const response = await userService.deleteUser(req.params.id!);
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const { headers } = this.buildRequestConfig(req);
+			const response = await userService.deleteUser(req.params.id, headers);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -81,8 +109,12 @@ export class UserController {
 	// Learning Path
 	async getLearningPath(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ id: req.params.id }, res)) return;
-			const response = await userService.getLearningPath(req.params.id!);
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const { headers } = this.buildRequestConfig(req);
+			const response = await userService.getLearningPath(
+				req.params.id,
+				headers,
+			);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -91,10 +123,12 @@ export class UserController {
 
 	async createLearningPath(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ id: req.params.id }, res)) return;
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.createLearningPath(
-				req.params.id!,
+				req.params.id,
 				req.body,
+				headers,
 			);
 			res.status(201).json(response.data);
 		} catch (error) {
@@ -104,10 +138,12 @@ export class UserController {
 
 	async updateLearningPath(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ id: req.params.id }, res)) return;
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.updateLearningPath(
-				req.params.id!,
+				req.params.id,
 				req.body,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -118,10 +154,12 @@ export class UserController {
 	// Reviews
 	async getUserReviews(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ id: req.params.id }, res)) return;
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const { queryParams, headers } = this.buildRequestConfig(req);
 			const response = await userService.getUserReviews(
-				req.params.id!,
-				req.query,
+				req.params.id,
+				queryParams,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -131,11 +169,16 @@ export class UserController {
 
 	async getInstructorReviews(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ instructorId: req.params.instructorId }, res))
+			if (
+				!validateParams({ instructorId: req.params.instructorId }, res) ||
+				!req.params.instructorId
+			)
 				return;
+			const { queryParams, headers } = this.buildRequestConfig(req);
 			const response = await userService.getInstructorReviews(
-				req.params.instructorId!,
-				req.query,
+				req.params.instructorId,
+				queryParams,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -145,10 +188,16 @@ export class UserController {
 
 	async getCourseReviews(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ courseId: req.params.courseId }, res)) return;
+			if (
+				!validateParams({ courseId: req.params.courseId }, res) ||
+				!req.params.courseId
+			)
+				return;
+			const { queryParams, headers } = this.buildRequestConfig(req);
 			const response = await userService.getCourseReviews(
-				req.params.courseId!,
-				req.query,
+				req.params.courseId,
+				queryParams,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -158,8 +207,13 @@ export class UserController {
 
 	async createReview(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ id: req.params.id }, res)) return;
-			const response = await userService.createReview(req.params.id!, req.body);
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const { headers } = this.buildRequestConfig(req);
+			const response = await userService.createReview(
+				req.params.id,
+				req.body,
+				headers,
+			);
 			res.status(201).json(response.data);
 		} catch (error) {
 			next(error);
@@ -172,13 +226,17 @@ export class UserController {
 				!validateParams(
 					{ id: req.params.id, reviewId: req.params.reviewId },
 					res,
-				)
+				) ||
+				!req.params.id ||
+				!req.params.reviewId
 			)
 				return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.updateReview(
-				req.params.id!,
-				req.params.reviewId!,
+				req.params.id,
+				req.params.reviewId,
 				req.body,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -192,12 +250,16 @@ export class UserController {
 				!validateParams(
 					{ id: req.params.id, reviewId: req.params.reviewId },
 					res,
-				)
+				) ||
+				!req.params.id ||
+				!req.params.reviewId
 			)
 				return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.deleteReview(
-				req.params.id!,
-				req.params.reviewId!,
+				req.params.id,
+				req.params.reviewId,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -208,10 +270,12 @@ export class UserController {
 	// Linked Accounts
 	async getLinkedAccounts(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ id: req.params.id }, res)) return;
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const { queryParams, headers } = this.buildRequestConfig(req);
 			const response = await userService.getLinkedAccounts(
-				req.params.id!,
-				req.query,
+				req.params.id,
+				queryParams,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -225,12 +289,16 @@ export class UserController {
 				!validateParams(
 					{ id: req.params.id, accountId: req.params.accountId },
 					res,
-				)
+				) ||
+				!req.params.id ||
+				!req.params.accountId
 			)
 				return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.getLinkedAccount(
-				req.params.id!,
-				req.params.accountId!,
+				req.params.id,
+				req.params.accountId,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -240,10 +308,12 @@ export class UserController {
 
 	async createLinkedAccount(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ id: req.params.id }, res)) return;
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.createLinkedAccount(
-				req.params.id!,
+				req.params.id,
 				req.body,
+				headers,
 			);
 			res.status(201).json(response.data);
 		} catch (error) {
@@ -257,13 +327,17 @@ export class UserController {
 				!validateParams(
 					{ id: req.params.id, accountId: req.params.accountId },
 					res,
-				)
+				) ||
+				!req.params.id ||
+				!req.params.accountId
 			)
 				return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.updateLinkedAccount(
-				req.params.id!,
-				req.params.accountId!,
+				req.params.id,
+				req.params.accountId,
 				req.body,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -277,12 +351,16 @@ export class UserController {
 				!validateParams(
 					{ id: req.params.id, accountId: req.params.accountId },
 					res,
-				)
+				) ||
+				!req.params.id ||
+				!req.params.accountId
 			)
 				return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.deleteLinkedAccount(
-				req.params.id!,
-				req.params.accountId!,
+				req.params.id,
+				req.params.accountId,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -293,7 +371,8 @@ export class UserController {
 	// Admin - Roles
 	async getRoles(req: Request, res: Response, next: NextFunction) {
 		try {
-			const response = await userService.getRoles(req.query);
+			const { queryParams, headers } = this.buildRequestConfig(req);
+			const response = await userService.getRoles(queryParams, headers);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -302,8 +381,13 @@ export class UserController {
 
 	async getRoleByName(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ name: req.params.name }, res)) return;
-			const response = await userService.getRoleByName(req.params.name!);
+			if (!validateParams({ name: req.params.name }, res) || !req.params.name)
+				return;
+			const { headers } = this.buildRequestConfig(req);
+			const response = await userService.getRoleByName(
+				req.params.name,
+				headers,
+			);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -312,7 +396,8 @@ export class UserController {
 
 	async createRole(req: Request, res: Response, next: NextFunction) {
 		try {
-			const response = await userService.createRole(req.body);
+			const { headers } = this.buildRequestConfig(req);
+			const response = await userService.createRole(req.body, headers);
 			res.status(201).json(response.data);
 		} catch (error) {
 			next(error);
@@ -321,8 +406,14 @@ export class UserController {
 
 	async updateRole(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ name: req.params.name }, res)) return;
-			const response = await userService.updateRole(req.params.name!, req.body);
+			if (!validateParams({ name: req.params.name }, res) || !req.params.name)
+				return;
+			const { headers } = this.buildRequestConfig(req);
+			const response = await userService.updateRole(
+				req.params.name,
+				req.body,
+				headers,
+			);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -331,8 +422,10 @@ export class UserController {
 
 	async deleteRole(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ name: req.params.name }, res)) return;
-			const response = await userService.deleteRole(req.params.name!);
+			if (!validateParams({ name: req.params.name }, res) || !req.params.name)
+				return;
+			const { headers } = this.buildRequestConfig(req);
+			const response = await userService.deleteRole(req.params.name, headers);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -342,7 +435,8 @@ export class UserController {
 	// Admin - Role Assignations
 	async getAssignations(req: Request, res: Response, next: NextFunction) {
 		try {
-			const response = await userService.getAssignations(req.query);
+			const { queryParams, headers } = this.buildRequestConfig(req);
+			const response = await userService.getAssignations(queryParams, headers);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -351,7 +445,8 @@ export class UserController {
 
 	async createAssignation(req: Request, res: Response, next: NextFunction) {
 		try {
-			const response = await userService.createAssignation(req.body);
+			const { headers } = this.buildRequestConfig(req);
+			const response = await userService.createAssignation(req.body, headers);
 			res.status(201).json(response.data);
 		} catch (error) {
 			next(error);
@@ -368,13 +463,17 @@ export class UserController {
 				!validateParams(
 					{ userId: req.params.userId, role: req.params.role },
 					res,
-				)
+				) ||
+				!req.params.userId ||
+				!req.params.role
 			)
 				return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.updateAssignationByUserRole(
-				req.params.userId!,
-				req.params.role!,
+				req.params.userId,
+				req.params.role,
 				req.body,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -384,11 +483,16 @@ export class UserController {
 
 	async updateAssignationById(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ assignationId: req.params.assignationId }, res))
+			if (
+				!validateParams({ assignationId: req.params.assignationId }, res) ||
+				!req.params.assignationId
+			)
 				return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.updateAssignationById(
-				req.params.assignationId!,
+				req.params.assignationId,
 				req.body,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -406,12 +510,16 @@ export class UserController {
 				!validateParams(
 					{ userId: req.params.userId, role: req.params.role },
 					res,
-				)
+				) ||
+				!req.params.userId ||
+				!req.params.role
 			)
 				return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.deleteAssignationByUserRole(
-				req.params.userId!,
-				req.params.role!,
+				req.params.userId,
+				req.params.role,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -421,10 +529,15 @@ export class UserController {
 
 	async deleteAssignationById(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ assignationId: req.params.assignationId }, res))
+			if (
+				!validateParams({ assignationId: req.params.assignationId }, res) ||
+				!req.params.assignationId
+			)
 				return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.deleteAssignationById(
-				req.params.assignationId!,
+				req.params.assignationId,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -435,7 +548,8 @@ export class UserController {
 	// Admin - Instructors
 	async getInstructors(req: Request, res: Response, next: NextFunction) {
 		try {
-			const response = await userService.getInstructors(req.query);
+			const { queryParams, headers } = this.buildRequestConfig(req);
+			const response = await userService.getInstructors(queryParams, headers);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -444,7 +558,8 @@ export class UserController {
 
 	async createInstructor(req: Request, res: Response, next: NextFunction) {
 		try {
-			const response = await userService.createInstructor(req.body);
+			const { headers } = this.buildRequestConfig(req);
+			const response = await userService.createInstructor(req.body, headers);
 			res.status(201).json(response.data);
 		} catch (error) {
 			next(error);
@@ -453,11 +568,16 @@ export class UserController {
 
 	async updateInstructor(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ instructorId: req.params.instructorId }, res))
+			if (
+				!validateParams({ instructorId: req.params.instructorId }, res) ||
+				!req.params.instructorId
+			)
 				return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.updateInstructor(
-				req.params.instructorId!,
+				req.params.instructorId,
 				req.body,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -467,10 +587,15 @@ export class UserController {
 
 	async deleteInstructor(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ instructorId: req.params.instructorId }, res))
+			if (
+				!validateParams({ instructorId: req.params.instructorId }, res) ||
+				!req.params.instructorId
+			)
 				return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.deleteInstructor(
-				req.params.instructorId!,
+				req.params.instructorId,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -481,10 +606,15 @@ export class UserController {
 	// Public Instructors
 	async getInstructorById(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ instructorId: req.params.instructorId }, res))
+			if (
+				!validateParams({ instructorId: req.params.instructorId }, res) ||
+				!req.params.instructorId
+			)
 				return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.getInstructorById(
-				req.params.instructorId!,
+				req.params.instructorId,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -494,7 +624,8 @@ export class UserController {
 
 	async registerInstructor(req: Request, res: Response, next: NextFunction) {
 		try {
-			const response = await userService.registerInstructor(req.body);
+			const { headers } = this.buildRequestConfig(req);
+			const response = await userService.registerInstructor(req.body, headers);
 			res.status(201).json(response.data);
 		} catch (error) {
 			next(error);
@@ -507,11 +638,16 @@ export class UserController {
 		next: NextFunction,
 	) {
 		try {
-			if (!validateParams({ instructorId: req.params.instructorId }, res))
+			if (
+				!validateParams({ instructorId: req.params.instructorId }, res) ||
+				!req.params.instructorId
+			)
 				return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.updateInstructorPublic(
-				req.params.instructorId!,
+				req.params.instructorId,
 				req.body,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {
@@ -525,10 +661,15 @@ export class UserController {
 		next: NextFunction,
 	) {
 		try {
-			if (!validateParams({ instructorId: req.params.instructorId }, res))
+			if (
+				!validateParams({ instructorId: req.params.instructorId }, res) ||
+				!req.params.instructorId
+			)
 				return;
+			const { headers } = this.buildRequestConfig(req);
 			const response = await userService.deleteInstructorPublic(
-				req.params.instructorId!,
+				req.params.instructorId,
+				headers,
 			);
 			res.json(response.data);
 		} catch (error) {

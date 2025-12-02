@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import { aiService } from "../services/ai.service";
-import { validateBody, validateParams } from "../utils/validation";
+import { aiService } from "../services/ai.service.js";
+import { validateBody, validateParams } from "../utils/validation.js";
 
 export class AIController {
 	async chat(req: Request, res: Response, next: NextFunction) {
@@ -38,8 +38,8 @@ export class AIController {
 
 	async getChatHistory(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ id: req.params.id }, res)) return;
-			const response = await aiService.getChatHistory(req.params.id!);
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const response = await aiService.getChatHistory(req.params.id);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -48,8 +48,8 @@ export class AIController {
 
 	async deleteChat(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (!validateParams({ id: req.params.id }, res)) return;
-			const response = await aiService.deleteChat(req.params.id!);
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const response = await aiService.deleteChat(req.params.id);
 			res.json(response.data);
 		} catch (error) {
 			next(error);

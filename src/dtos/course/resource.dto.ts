@@ -1,6 +1,6 @@
 import type { DISCRIMINANT_RESOURCE, RESOURCE_TYPE } from "../common/enums";
 
-type Json = Record<string, any>;
+type Json = Record<string, unknown>;
 
 export interface ResourcesInDTO {
 	entityReference: string;

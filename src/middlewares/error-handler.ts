@@ -1,17 +1,18 @@
 import type { AxiosError } from "axios";
 import type { NextFunction, Request, Response } from "express";
+import { logger } from "../utils/logger.js";
 
 export const errorHandler = (
 	err: Error | AxiosError,
-	req: Request,
+	_req: Request,
 	res: Response,
-	next: NextFunction,
+	_next: NextFunction,
 ) => {
-	console.error("Error:", err);
+	logger.error("Error:", err);
 
 	// Handle Axios errors (from service calls)
 	if ("isAxiosError" in err && err.isAxiosError) {
-		const axiosError = err as AxiosError;
+		const axiosError = err;
 
 		if (axiosError.response) {
 			// The request was made and the server responded with a status code

@@ -3,10 +3,10 @@ import axios, {
 	type AxiosRequestConfig,
 	type AxiosResponse,
 } from "axios";
-import { env } from "../config/env";
+import { env } from "../config/env.js";
 
 export class HttpClientService {
-	private client: AxiosInstance;
+	private readonly client: AxiosInstance;
 
 	constructor(baseURL: string) {
 		this.client = axios.create({
@@ -55,7 +55,7 @@ export class HttpClientService {
 
 	async post<T>(
 		url: string,
-		data?: any,
+		data?: unknown,
 		config?: AxiosRequestConfig,
 	): Promise<AxiosResponse<T>> {
 		return this.client.post<T>(url, data, config);
@@ -63,7 +63,7 @@ export class HttpClientService {
 
 	async put<T>(
 		url: string,
-		data?: any,
+		data?: unknown,
 		config?: AxiosRequestConfig,
 	): Promise<AxiosResponse<T>> {
 		return this.client.put<T>(url, data, config);
@@ -78,7 +78,7 @@ export class HttpClientService {
 
 	async patch<T>(
 		url: string,
-		data?: any,
+		data?: unknown,
 		config?: AxiosRequestConfig,
 	): Promise<AxiosResponse<T>> {
 		return this.client.patch<T>(url, data, config);

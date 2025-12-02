@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { courseController } from "../controllers/course.controller";
+import { courseController } from "../controllers/course.controller.js";
 
 const router: Router = Router();
 
@@ -86,18 +86,12 @@ router.get(
 	"/sections/:sectionId/quizzes",
 	courseController.getQuizzes.bind(courseController),
 );
-router.get(
-	"/quizzes/:id",
-	courseController.getQuizById.bind(courseController),
-);
+router.get("/quizzes/:id", courseController.getQuizById.bind(courseController));
 router.post(
 	"/sections/:sectionId/quizzes",
 	courseController.createQuiz.bind(courseController),
 );
-router.put(
-	"/quizzes/:id",
-	courseController.updateQuiz.bind(courseController),
-);
+router.put("/quizzes/:id", courseController.updateQuiz.bind(courseController));
 router.delete(
 	"/quizzes/:id",
 	courseController.deleteQuiz.bind(courseController),
