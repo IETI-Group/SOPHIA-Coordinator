@@ -34,7 +34,7 @@ app.use((req, res, next) => {
 });
 
 // Health check
-app.use("/", (_req, res) => {
+app.get("/", (_req, res) => {
 	res.json({
 		status: "UP",
 		timestamp: new Date().toISOString(),
