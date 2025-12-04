@@ -863,6 +863,206 @@ export class CourseController {
 			next(error);
 		}
 	}
+
+	// ============= Forum Methods =============
+
+	async getForums(req: Request, res: Response, next: NextFunction) {
+		try {
+			const response = await courseService.getForums(
+				req.query,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async getForumById(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const response = await courseService.getForumById(
+				req.params.id,
+				req.query,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async getForumByCourseId(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (
+				!validateParams({ courseId: req.params.courseId }, res) ||
+				!req.params.courseId
+			)
+				return;
+			const response = await courseService.getForumByCourseId(
+				req.params.courseId,
+				req.query,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async createForum(req: Request, res: Response, next: NextFunction) {
+		try {
+			const response = await courseService.createForum(
+				req.body,
+				req.query,
+				req.headers as Record<string, string>,
+			);
+			res.status(201).json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async updateForum(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const response = await courseService.updateForum(
+				req.params.id,
+				req.body,
+				req.query,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async deleteForum(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const response = await courseService.deleteForum(
+				req.params.id,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	// ============= Forum Message Methods =============
+
+	async getForumMessages(req: Request, res: Response, next: NextFunction) {
+		try {
+			const response = await courseService.getForumMessages(
+				req.query,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async getForumMessageById(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const response = await courseService.getForumMessageById(
+				req.params.id,
+				req.query,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async getForumMessagesByForumId(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	) {
+		try {
+			if (
+				!validateParams({ forumId: req.params.forumId }, res) ||
+				!req.params.forumId
+			)
+				return;
+			const response = await courseService.getForumMessagesByForumId(
+				req.params.forumId,
+				req.query,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async getForumMessageReplies(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	) {
+		try {
+			if (
+				!validateParams({ parentMessageId: req.params.parentMessageId }, res) ||
+				!req.params.parentMessageId
+			)
+				return;
+			const response = await courseService.getForumMessageReplies(
+				req.params.parentMessageId,
+				req.query,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async createForumMessage(req: Request, res: Response, next: NextFunction) {
+		try {
+			const response = await courseService.createForumMessage(
+				req.body,
+				req.query,
+				req.headers as Record<string, string>,
+			);
+			res.status(201).json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async updateForumMessage(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const response = await courseService.updateForumMessage(
+				req.params.id,
+				req.body,
+				req.query,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async deleteForumMessage(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const response = await courseService.deleteForumMessage(
+				req.params.id,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
 }
 
 export const courseController = new CourseController();

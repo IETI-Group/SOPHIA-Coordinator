@@ -509,6 +509,140 @@ class CourseService {
 			headers: this.extractAllowedHeaders(headers),
 		});
 	}
+
+	// ============= Forum Methods =============
+
+	async getForums(queryParams?: unknown, headers?: Record<string, string>) {
+		return this.httpClient.get("/forums", {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async getForumById(
+		id: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/forums/${id}`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async getForumByCourseId(
+		courseId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/courses/${courseId}/forum`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async createForum(
+		body: unknown,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.post("/forums", body, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async updateForum(
+		id: string,
+		body: unknown,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/forums/${id}`, body, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async deleteForum(id: string, headers?: Record<string, string>) {
+		return this.httpClient.delete(`/forums/${id}`, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	// ============= Forum Message Methods =============
+
+	async getForumMessages(
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get("/forum-messages", {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async getForumMessageById(
+		id: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/forum-messages/${id}`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async getForumMessagesByForumId(
+		forumId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/forums/${forumId}/messages`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async getForumMessageReplies(
+		parentMessageId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/forum-messages/${parentMessageId}/replies`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async createForumMessage(
+		body: unknown,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.post("/forum-messages", body, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async updateForumMessage(
+		id: string,
+		body: unknown,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/forum-messages/${id}`, body, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async deleteForumMessage(id: string, headers?: Record<string, string>) {
+		return this.httpClient.delete(`/forum-messages/${id}`, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 }
 
 export const courseService = new CourseService();

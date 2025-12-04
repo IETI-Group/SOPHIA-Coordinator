@@ -190,4 +190,48 @@ router.delete(
 	courseController.deleteAISpec.bind(courseController),
 );
 
+// Forums routes
+router.get("/forums", courseController.getForums.bind(courseController));
+router.get("/forums/:id", courseController.getForumById.bind(courseController));
+router.get(
+	"/courses/:courseId/forum",
+	courseController.getForumByCourseId.bind(courseController),
+);
+router.post("/forums", courseController.createForum.bind(courseController));
+router.put("/forums/:id", courseController.updateForum.bind(courseController));
+router.delete(
+	"/forums/:id",
+	courseController.deleteForum.bind(courseController),
+);
+
+// Forum Messages routes
+router.get(
+	"/forum-messages",
+	courseController.getForumMessages.bind(courseController),
+);
+router.get(
+	"/forum-messages/:id",
+	courseController.getForumMessageById.bind(courseController),
+);
+router.get(
+	"/forums/:forumId/messages",
+	courseController.getForumMessagesByForumId.bind(courseController),
+);
+router.get(
+	"/forum-messages/:parentMessageId/replies",
+	courseController.getForumMessageReplies.bind(courseController),
+);
+router.post(
+	"/forum-messages",
+	courseController.createForumMessage.bind(courseController),
+);
+router.put(
+	"/forum-messages/:id",
+	courseController.updateForumMessage.bind(courseController),
+);
+router.delete(
+	"/forum-messages/:id",
+	courseController.deleteForumMessage.bind(courseController),
+);
+
 export default router;
