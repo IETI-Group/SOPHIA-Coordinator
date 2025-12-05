@@ -93,4 +93,32 @@ export class AuthController {
 			next(error);
 		}
 	};
+
+	confirmEmail = async (
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> => {
+		try {
+			const { headers } = this.buildRequestConfig(req);
+			const response = await authService.confirmEmail(req.body, headers);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	resendConfirmation = async (
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> => {
+		try {
+			const { headers } = this.buildRequestConfig(req);
+			const response = await authService.resendConfirmation(req.body, headers);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	};
 }

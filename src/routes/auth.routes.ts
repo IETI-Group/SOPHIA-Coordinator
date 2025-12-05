@@ -46,4 +46,18 @@ router.get("/me", authController.me);
  */
 router.post("/verify", authController.verify);
 
+/**
+ * @route   POST /auth/confirm-email
+ * @desc    Confirma el email del usuario con el código de verificación
+ * @access  Public
+ */
+router.post("/confirm-email", authController.confirmEmail);
+
+/**
+ * @route   POST /auth/resend-confirmation
+ * @desc    Reenvía el código de confirmación al email del usuario
+ * @access  Public
+ */
+router.post("/resend-confirmation", authController.resendConfirmation);
+
 export default router;

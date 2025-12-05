@@ -51,6 +51,18 @@ class AuthService {
 			headers: this.extractAuth(headers),
 		});
 	}
+
+	async confirmEmail(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/auth/confirm-email", body, {
+			headers: this.extractAuth(headers),
+		});
+	}
+
+	async resendConfirmation(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/auth/resend-confirmation", body, {
+			headers: this.extractAuth(headers),
+		});
+	}
 }
 
 export const authService = new AuthService();
