@@ -1,0 +1,68 @@
+import { env } from "../config/env.js";
+import { HttpClientService } from "./http-client.service.js";
+
+class AuthService {
+	private readonly httpClient: HttpClientService;
+
+	constructor() {
+		this.httpClient = new HttpClientService(env.authServiceUrl);
+	}
+
+	// Helper para extraer solo Authorization
+	private extractAuth(headers?: Record<string, string>) {
+		const { authorization } = headers ?? {};
+		return authorization ? { authorization } : {};
+	}
+
+	async signup(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/auth/signup", body, {
+			headers: this.extractAuth(headers),
+		});
+	}
+
+	async login(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/auth/login", body, {
+			headers: this.extractAuth(headers),
+		});
+	}
+
+	async callback(queryParams?: unknown, headers?: Record<string, string>) {
+		return this.httpClient.get("/auth/callback", {
+			params: queryParams,
+			headers: this.extractAuth(headers),
+		});
+	}
+
+	async logout(queryParams?: unknown, headers?: Record<string, string>) {
+		return this.httpClient.get("/auth/logout", {
+			params: queryParams,
+			headers: this.extractAuth(headers),
+		});
+	}
+
+	async me(headers?: Record<string, string>) {
+		return this.httpClient.get("/auth/me", {
+			headers: this.extractAuth(headers),
+		});
+	}
+
+	async verify(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/auth/verify", body, {
+			headers: this.extractAuth(headers),
+		});
+	}
+
+	async confirmEmail(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/auth/confirm-email", body, {
+			headers: this.extractAuth(headers),
+		});
+	}
+
+	async resendConfirmation(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/auth/resend-confirmation", body, {
+			headers: this.extractAuth(headers),
+		});
+	}
+}
+
+export const authService = new AuthService();

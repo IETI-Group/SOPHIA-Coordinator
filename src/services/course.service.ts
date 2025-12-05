@@ -1,189 +1,648 @@
-import { env } from '../config/env.js';
-import { HttpClientService } from './http-client.service.js';
+import { env } from "../config/env.js";
+import { HttpClientService } from "./http-client.service.js";
 
 class CourseService {
-  private httpClient: HttpClientService;
+	private readonly httpClient: HttpClientService;
+	private extractAllowedHeaders(headers?: Record<string, string>) {
+		if (!headers) return {};
 
-  constructor() {
-    this.httpClient = new HttpClientService(env.courseServiceUrl);
-  }
+		const allowed = ["authorization"];
 
-  // Courses endpoints
-  async getCourses(queryParams?: any) {
-    return this.httpClient.get('/courses', { params: queryParams });
-  }
+		const filtered: Record<string, string> = {};
+		for (const key of allowed) {
+			const value = headers[key] ?? headers[key.toLowerCase()];
+			if (value) filtered[key] = value;
+		}
+		return filtered;
+	}
 
-  async getCourseById(id: string, queryParams?: any) {
-    return this.httpClient.get(`/courses/${id}`, { params: queryParams });
-  }
+	constructor() {
+		this.httpClient = new HttpClientService(env.courseServiceUrl);
+	}
+	async getCourses(queryParams?: unknown, headers?: Record<string, string>) {
+		return this.httpClient.get("/courses", {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async createCourse(body: any) {
-    return this.httpClient.post('/courses', body);
-  }
+	async getCourseById(
+		id: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/courses/${id}`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async updateCourse(id: string, body: any) {
-    return this.httpClient.put(`/courses/${id}`, body);
-  }
+	async createCourse(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/courses", body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async deleteCourse(id: string) {
-    return this.httpClient.delete(`/courses/${id}`);
-  }
+	async updateCourse(
+		id: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/courses/${id}`, body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  // Sections endpoints
-  async getSections(courseId: string, queryParams?: any) {
-    return this.httpClient.get(`/courses/${courseId}/sections`, { params: queryParams });
-  }
+	async deleteCourse(id: string, headers?: Record<string, string>) {
+		return this.httpClient.delete(`/courses/${id}`, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async createSection(courseId: string, body: any) {
-    return this.httpClient.post(`/courses/${courseId}/sections`, body);
-  }
+	// Sections
 
-  async updateSection(courseId: string, sectionId: string, body: any) {
-    return this.httpClient.put(`/courses/${courseId}/sections/${sectionId}`, body);
-  }
+	async getSections(
+		courseId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/courses/${courseId}/sections`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async deleteSection(courseId: string, sectionId: string) {
-    return this.httpClient.delete(`/courses/${courseId}/sections/${sectionId}`);
-  }
+	async createSection(
+		courseId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.post(`/courses/${courseId}/sections`, body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  // Lessons endpoints
-  async getLessons(sectionId: string, queryParams?: any) {
-    return this.httpClient.get(`/sections/${sectionId}/lessons`, { params: queryParams });
-  }
+	async updateSection(
+		courseId: string,
+		sectionId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(
+			`/courses/${courseId}/sections/${sectionId}`,
+			body,
+			{ headers: this.extractAllowedHeaders(headers) },
+		);
+	}
 
-  async getLessonById(sectionId: string, lessonId: string, queryParams?: any) {
-    return this.httpClient.get(`/sections/${sectionId}/lessons/${lessonId}`, { params: queryParams });
-  }
+	async deleteSection(
+		courseId: string,
+		sectionId: string,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.delete(
+			`/courses/${courseId}/sections/${sectionId}`,
+			{
+				headers: this.extractAllowedHeaders(headers),
+			},
+		);
+	}
 
-  async createLesson(sectionId: string, body: any) {
-    return this.httpClient.post(`/sections/${sectionId}/lessons`, body);
-  }
+	// Lessons
 
-  async updateLesson(sectionId: string, lessonId: string, body: any) {
-    return this.httpClient.put(`/sections/${sectionId}/lessons/${lessonId}`, body);
-  }
+	async getLessons(
+		sectionId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/sections/${sectionId}/lessons`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async deleteLesson(sectionId: string, lessonId: string) {
-    return this.httpClient.delete(`/sections/${sectionId}/lessons/${lessonId}`);
-  }
+	async getLessonById(
+		sectionId: string,
+		lessonId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/sections/${sectionId}/lessons/${lessonId}`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  // Quizzes endpoints
-  async getQuizzes(sectionId: string, queryParams?: any) {
-    return this.httpClient.get(`/sections/${sectionId}/quizzes`, { params: queryParams });
-  }
+	async createLesson(
+		sectionId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.post(`/sections/${sectionId}/lessons`, body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async getQuizById(sectionId: string, quizId: string, queryParams?: any) {
-    return this.httpClient.get(`/sections/${sectionId}/quizzes/${quizId}`, { params: queryParams });
-  }
+	async updateLesson(
+		sectionId: string,
+		lessonId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(
+			`/sections/${sectionId}/lessons/${lessonId}`,
+			body,
+			{ headers: this.extractAllowedHeaders(headers) },
+		);
+	}
 
-  async createQuiz(sectionId: string, body: any) {
-    return this.httpClient.post(`/sections/${sectionId}/quizzes`, body);
-  }
+	async deleteLesson(
+		sectionId: string,
+		lessonId: string,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.delete(
+			`/sections/${sectionId}/lessons/${lessonId}`,
+			{
+				headers: this.extractAllowedHeaders(headers),
+			},
+		);
+	}
 
-  async updateQuiz(sectionId: string, quizId: string, body: any) {
-    return this.httpClient.put(`/sections/${sectionId}/quizzes/${quizId}`, body);
-  }
+	// Lesson Contents
 
-  async deleteQuiz(sectionId: string, quizId: string) {
-    return this.httpClient.delete(`/sections/${sectionId}/quizzes/${quizId}`);
-  }
+	async getLessonContents(
+		lessonId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/lessons/${lessonId}/contents`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  // Assignments endpoints
-  async getAssignments(lessonId: string, queryParams?: any) {
-    return this.httpClient.get(`/lessons/${lessonId}/assignments`, { params: queryParams });
-  }
+	async getContentById(
+		contentId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/contents/${contentId}`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async getAssignmentById(lessonId: string, assignmentId: string, queryParams?: any) {
-    return this.httpClient.get(`/lessons/${lessonId}/assignments/${assignmentId}`, { params: queryParams });
-  }
+	async createLessonContent(
+		lessonId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.post(`/lessons/${lessonId}/contents`, body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async createAssignment(lessonId: string, body: any) {
-    return this.httpClient.post(`/lessons/${lessonId}/assignments`, body);
-  }
+	async updateContent(
+		contentId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/contents/${contentId}`, body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async updateAssignment(lessonId: string, assignmentId: string, body: any) {
-    return this.httpClient.put(`/lessons/${lessonId}/assignments/${assignmentId}`, body);
-  }
+	async deleteContent(contentId: string, headers?: Record<string, string>) {
+		return this.httpClient.delete(`/contents/${contentId}`, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async deleteAssignment(lessonId: string, assignmentId: string) {
-    return this.httpClient.delete(`/lessons/${lessonId}/assignments/${assignmentId}`);
-  }
+	// Quizzes
 
-  // Resources endpoints
-  async getResources(queryParams?: any) {
-    return this.httpClient.get('/resources', { params: queryParams });
-  }
+	async getQuizzes(
+		sectionId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/sections/${sectionId}/quizzes`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async getResourceById(resourceId: string, queryParams?: any) {
-    return this.httpClient.get(`/resources/${resourceId}`, { params: queryParams });
-  }
+	async getQuizById(
+		sectionId: string,
+		quizId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/sections/${sectionId}/quizzes/${quizId}`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async createResource(body: any) {
-    return this.httpClient.post('/resources', body);
-  }
+	async createQuiz(
+		sectionId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.post(`/sections/${sectionId}/quizzes`, body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async updateResource(resourceId: string, body: any) {
-    return this.httpClient.put(`/resources/${resourceId}`, body);
-  }
+	async updateQuiz(
+		sectionId: string,
+		quizId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(
+			`/sections/${sectionId}/quizzes/${quizId}`,
+			body,
+			{ headers: this.extractAllowedHeaders(headers) },
+		);
+	}
 
-  async deleteResource(resourceId: string) {
-    return this.httpClient.delete(`/resources/${resourceId}`);
-  }
+	async deleteQuiz(
+		sectionId: string,
+		quizId: string,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.delete(`/sections/${sectionId}/quizzes/${quizId}`, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  // Tags endpoints
-  async getTags(queryParams?: any) {
-    return this.httpClient.get('/tags', { params: queryParams });
-  }
+	// Assignments
 
-  async createTag(body: any) {
-    return this.httpClient.post('/tags', body);
-  }
+	async getAssignments(
+		lessonId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/lessons/${lessonId}/assignments`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async deleteTag(categoryId: string, courseId: string) {
-    return this.httpClient.delete(`/tags/${categoryId}/${courseId}`);
-  }
+	async getAssignmentById(
+		lessonId: string,
+		assignmentId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(
+			`/lessons/${lessonId}/assignments/${assignmentId}`,
+			{
+				params: queryParams,
+				headers: this.extractAllowedHeaders(headers),
+			},
+		);
+	}
 
-  // Categories endpoints
-  async getCategories(queryParams?: any) {
-    return this.httpClient.get('/categories', { params: queryParams });
-  }
+	async createAssignment(
+		lessonId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.post(`/lessons/${lessonId}/assignments`, body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async getCategoryById(categoryId: string, queryParams?: any) {
-    return this.httpClient.get(`/categories/${categoryId}`, { params: queryParams });
-  }
+	async updateAssignment(
+		lessonId: string,
+		assignmentId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(
+			`/lessons/${lessonId}/assignments/${assignmentId}`,
+			body,
+			{ headers: this.extractAllowedHeaders(headers) },
+		);
+	}
 
-  async createCategory(body: any) {
-    return this.httpClient.post('/categories', body);
-  }
+	async deleteAssignment(
+		lessonId: string,
+		assignmentId: string,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.delete(
+			`/lessons/${lessonId}/assignments/${assignmentId}`,
+			{
+				headers: this.extractAllowedHeaders(headers),
+			},
+		);
+	}
 
-  async updateCategory(categoryId: string, body: any) {
-    return this.httpClient.put(`/categories/${categoryId}`, body);
-  }
+	// Resources
 
-  async deleteCategory(categoryId: string) {
-    return this.httpClient.delete(`/categories/${categoryId}`);
-  }
+	async getResources(queryParams?: unknown, headers?: Record<string, string>) {
+		return this.httpClient.get("/resources", {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  // AI Specs endpoints
-  async getAISpecs(lessonId: string, queryParams?: any) {
-    return this.httpClient.get(`/lessons/${lessonId}/ai-specs`, { params: queryParams });
-  }
+	async getResourceById(
+		resourceId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/resources/${resourceId}`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async getAISpecById(lessonId: string, specId: string, queryParams?: any) {
-    return this.httpClient.get(`/lessons/${lessonId}/ai-specs/${specId}`, { params: queryParams });
-  }
+	async createResource(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/resources", body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async createAISpec(lessonId: string, body: any) {
-    return this.httpClient.post(`/lessons/${lessonId}/ai-specs`, body);
-  }
+	async updateResource(
+		resourceId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/resources/${resourceId}`, body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async updateAISpec(lessonId: string, specId: string, body: any) {
-    return this.httpClient.put(`/lessons/${lessonId}/ai-specs/${specId}`, body);
-  }
+	async deleteResource(resourceId: string, headers?: Record<string, string>) {
+		return this.httpClient.delete(`/resources/${resourceId}`, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 
-  async deleteAISpec(lessonId: string, specId: string) {
-    return this.httpClient.delete(`/lessons/${lessonId}/ai-specs/${specId}`);
-  }
+	// Tags
+
+	async getTags(queryParams?: unknown, headers?: Record<string, string>) {
+		return this.httpClient.get("/tags", {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async createTag(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/tags", body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async deleteTag(
+		categoryId: string,
+		courseId: string,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.delete(`/tags/${categoryId}/${courseId}`, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	// Categories
+
+	async getCategories(queryParams?: unknown, headers?: Record<string, string>) {
+		return this.httpClient.get("/categories", {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async getCategoryById(
+		categoryId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/categories/${categoryId}`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async createCategory(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/categories", body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async updateCategory(
+		categoryId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/categories/${categoryId}`, body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async deleteCategory(categoryId: string, headers?: Record<string, string>) {
+		return this.httpClient.delete(`/categories/${categoryId}`, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	// AI Specs
+
+	async getAISpecs(
+		lessonId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/lessons/${lessonId}/ai-specs`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async getAISpecById(
+		lessonId: string,
+		specId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/lessons/${lessonId}/ai-specs/${specId}`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async createAISpec(
+		lessonId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.post(`/lessons/${lessonId}/ai-specs`, body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async updateAISpec(
+		lessonId: string,
+		specId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(
+			`/lessons/${lessonId}/ai-specs/${specId}`,
+			body,
+			{
+				headers: this.extractAllowedHeaders(headers),
+			},
+		);
+	}
+
+	async deleteAISpec(
+		lessonId: string,
+		specId: string,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.delete(`/lessons/${lessonId}/ai-specs/${specId}`, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	// ============= Forum Methods =============
+
+	async getForums(queryParams?: unknown, headers?: Record<string, string>) {
+		return this.httpClient.get("/forums", {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async getForumById(
+		id: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/forums/${id}`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async getForumByCourseId(
+		courseId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/courses/${courseId}/forum`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async createForum(
+		body: unknown,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.post("/forums", body, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async updateForum(
+		id: string,
+		body: unknown,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/forums/${id}`, body, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async deleteForum(id: string, headers?: Record<string, string>) {
+		return this.httpClient.delete(`/forums/${id}`, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	// ============= Forum Message Methods =============
+
+	async getForumMessages(
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get("/forum-messages", {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async getForumMessageById(
+		id: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/forum-messages/${id}`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async getForumMessagesByForumId(
+		forumId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/forums/${forumId}/messages`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async getForumMessageReplies(
+		parentMessageId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/forum-messages/${parentMessageId}/replies`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async createForumMessage(
+		body: unknown,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.post("/forum-messages", body, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async updateForumMessage(
+		id: string,
+		body: unknown,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/forum-messages/${id}`, body, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async deleteForumMessage(id: string, headers?: Record<string, string>) {
+		return this.httpClient.delete(`/forum-messages/${id}`, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 }
 
 export const courseService = new CourseService();

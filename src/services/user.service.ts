@@ -1,180 +1,407 @@
-import { env } from '../config/env.js';
-import { HttpClientService } from './http-client.service.js';
+import { env } from "../config/env.js";
+import { HttpClientService } from "./http-client.service.js";
 
 class UserService {
-  private httpClient: HttpClientService;
+	private readonly httpClient: HttpClientService;
 
-  constructor() {
-    this.httpClient = new HttpClientService(env.userServiceUrl);
-  }
+	constructor() {
+		this.httpClient = new HttpClientService(env.userServiceUrl);
+	}
 
-  // Users endpoints
-  async getUsers(queryParams: any) {
-    return this.httpClient.get('/users', { params: queryParams });
-  }
+	// Helper para extraer solo Authorization
+	private extractAuth(headers?: Record<string, string>) {
+		const { authorization } = headers ?? {};
+		return authorization ? { authorization } : {};
+	}
 
-  async getUserById(id: string, queryParams?: any) {
-    return this.httpClient.get(`/users/id/${id}`, { params: queryParams });
-  }
+	// Users endpoints
+	async getUsers(queryParams?: unknown, headers?: Record<string, string>) {
+		return this.httpClient.get("/users", {
+			params: queryParams,
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async getUserByEmail(email: string, queryParams?: any) {
-    return this.httpClient.get(`/users/email/${email}`, { params: queryParams });
-  }
+	async getUserById(
+		id: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/users/id/${id}`, {
+			params: queryParams,
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async getUsersBatch(body: any, queryParams?: any) {
-    return this.httpClient.post('/users/batch', body, { params: queryParams });
-  }
+	async getUserByEmail(
+		email: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/users/email/${email}`, {
+			params: queryParams,
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async createUser(body: any) {
-    return this.httpClient.post('/users', body);
-  }
+	async getUsersBatch(
+		body: unknown,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.post("/users/batch", body, {
+			params: queryParams,
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async updateUser(id: string, body: any) {
-    return this.httpClient.put(`/users/${id}`, body);
-  }
+	async createUser(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/users", body, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async deleteUser(id: string) {
-    return this.httpClient.delete(`/users/${id}`);
-  }
+	async updateUser(
+		id: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/users/${id}`, body, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  // Learning Path endpoints
-  async getLearningPath(userId: string) {
-    return this.httpClient.get(`/users/${userId}/learning-path`);
-  }
+	async deleteUser(id: string, headers?: Record<string, string>) {
+		return this.httpClient.delete(`/users/${id}`, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async createLearningPath(userId: string, body: any) {
-    return this.httpClient.post(`/users/${userId}/learning-path`, body);
-  }
+	// Learning Path endpoints
+	async getLearningPath(userId: string, headers?: Record<string, string>) {
+		return this.httpClient.get(`/users/${userId}/learning-path`, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async updateLearningPath(userId: string, body: any) {
-    return this.httpClient.put(`/users/${userId}/learning-path`, body);
-  }
+	async createLearningPath(
+		userId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.post(`/users/${userId}/learning-path`, body, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  // Reviews endpoints
-  async getUserReviews(userId: string, queryParams?: any) {
-    return this.httpClient.get(`/users/${userId}/reviews`, { params: queryParams });
-  }
+	async updateLearningPath(
+		userId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/users/${userId}/learning-path`, body, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async getInstructorReviews(instructorId: string, queryParams?: any) {
-    return this.httpClient.get(`/users/instructors/${instructorId}/reviews`, { params: queryParams });
-  }
+	// Reviews endpoints
+	async getUserReviews(
+		userId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/users/${userId}/reviews`, {
+			params: queryParams,
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async getCourseReviews(courseId: string, queryParams?: any) {
-    return this.httpClient.get(`/users/courses/${courseId}/reviews`, { params: queryParams });
-  }
+	async getInstructorReviews(
+		instructorId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/users/instructors/${instructorId}/reviews`, {
+			params: queryParams,
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async createReview(userId: string, body: any) {
-    return this.httpClient.post(`/users/${userId}/reviews`, body);
-  }
+	async getCourseReviews(
+		courseId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/users/courses/${courseId}/reviews`, {
+			params: queryParams,
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async updateReview(userId: string, reviewId: string, body: any) {
-    return this.httpClient.put(`/users/${userId}/reviews/${reviewId}`, body);
-  }
+	async createReview(
+		userId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.post(`/users/${userId}/reviews`, body, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async deleteReview(userId: string, reviewId: string) {
-    return this.httpClient.delete(`/users/${userId}/reviews/${reviewId}`);
-  }
+	async updateReview(
+		userId: string,
+		reviewId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/users/${userId}/reviews/${reviewId}`, body, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  // Linked Accounts endpoints
-  async getLinkedAccounts(userId: string, queryParams?: any) {
-    return this.httpClient.get(`/users/${userId}/linked-accounts`, { params: queryParams });
-  }
+	async deleteReview(
+		userId: string,
+		reviewId: string,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.delete(`/users/${userId}/reviews/${reviewId}`, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async getLinkedAccount(userId: string, accountId: string) {
-    return this.httpClient.get(`/users/${userId}/linked-accounts/${accountId}`);
-  }
+	// Linked Accounts endpoints
+	async getLinkedAccounts(
+		userId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/users/${userId}/linked-accounts`, {
+			params: queryParams,
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async createLinkedAccount(userId: string, body: any) {
-    return this.httpClient.post(`/users/${userId}/linked-accounts`, body);
-  }
+	async getLinkedAccount(
+		userId: string,
+		accountId: string,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(
+			`/users/${userId}/linked-accounts/${accountId}`,
+			{
+				headers: this.extractAuth(headers),
+			},
+		);
+	}
 
-  async updateLinkedAccount(userId: string, accountId: string, body: any) {
-    return this.httpClient.put(`/users/${userId}/linked-accounts/${accountId}`, body);
-  }
+	async createLinkedAccount(
+		userId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.post(`/users/${userId}/linked-accounts`, body, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async deleteLinkedAccount(userId: string, accountId: string) {
-    return this.httpClient.delete(`/users/${userId}/linked-accounts/${accountId}`);
-  }
+	async updateLinkedAccount(
+		userId: string,
+		accountId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(
+			`/users/${userId}/linked-accounts/${accountId}`,
+			body,
+			{
+				headers: this.extractAuth(headers),
+			},
+		);
+	}
 
-  // Admin - Roles endpoints
-  async getRoles(queryParams?: any) {
-    return this.httpClient.get('/admin/roles', { params: queryParams });
-  }
+	async deleteLinkedAccount(
+		userId: string,
+		accountId: string,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.delete(
+			`/users/${userId}/linked-accounts/${accountId}`,
+			{
+				headers: this.extractAuth(headers),
+			},
+		);
+	}
 
-  async getRoleByName(name: string) {
-    return this.httpClient.get(`/admin/roles/${name}`);
-  }
+	// Admin - Roles endpoints
+	async getRoles(queryParams?: unknown, headers?: Record<string, string>) {
+		return this.httpClient.get("/admin/roles", {
+			params: queryParams,
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async createRole(body: any) {
-    return this.httpClient.post('/admin/roles', body);
-  }
+	async getRoleByName(name: string, headers?: Record<string, string>) {
+		return this.httpClient.get(`/admin/roles/${name}`, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async updateRole(name: string, body: any) {
-    return this.httpClient.put(`/admin/roles/${name}`, body);
-  }
+	async createRole(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/admin/roles", body, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async deleteRole(name: string) {
-    return this.httpClient.delete(`/admin/roles/${name}`);
-  }
+	async updateRole(
+		name: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/admin/roles/${name}`, body, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  // Admin - Role Assignations endpoints
-  async getAssignations(queryParams?: any) {
-    return this.httpClient.get('/admin/assignations', { params: queryParams });
-  }
+	async deleteRole(name: string, headers?: Record<string, string>) {
+		return this.httpClient.delete(`/admin/roles/${name}`, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async createAssignation(body: any) {
-    return this.httpClient.post('/admin/assignations', body);
-  }
+	// Admin - Assignations
+	async getAssignations(
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get("/admin/assignations", {
+			params: queryParams,
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async updateAssignationByUserRole(userId: string, role: string, body: any) {
-    return this.httpClient.put(`/admin/assignations/user/${userId}/role/${role}`, body);
-  }
+	async createAssignation(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/admin/assignations", body, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async updateAssignationById(assignationId: string, body: any) {
-    return this.httpClient.put(`/admin/assignations/${assignationId}`, body);
-  }
+	async updateAssignationByUserRole(
+		userId: string,
+		role: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(
+			`/admin/assignations/user/${userId}/role/${role}`,
+			body,
+			{
+				headers: this.extractAuth(headers),
+			},
+		);
+	}
 
-  async deleteAssignationByUserRole(userId: string, role: string) {
-    return this.httpClient.delete(`/admin/assignations/user/${userId}/role/${role}`);
-  }
+	async updateAssignationById(
+		assignationId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/admin/assignations/${assignationId}`, body, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async deleteAssignationById(assignationId: string) {
-    return this.httpClient.delete(`/admin/assignations/${assignationId}`);
-  }
+	async deleteAssignationByUserRole(
+		userId: string,
+		role: string,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.delete(
+			`/admin/assignations/user/${userId}/role/${role}`,
+			{
+				headers: this.extractAuth(headers),
+			},
+		);
+	}
 
-  // Admin - Instructors endpoints
-  async getInstructors(queryParams?: any) {
-    return this.httpClient.get('/admin/instructors', { params: queryParams });
-  }
+	async deleteAssignationById(
+		assignationId: string,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.delete(`/admin/assignations/${assignationId}`, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async createInstructor(body: any) {
-    return this.httpClient.post('/admin/instructors', body);
-  }
+	// Admin - Instructors
+	async getInstructors(
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get("/admin/instructors", {
+			params: queryParams,
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async updateInstructor(instructorId: string, body: any) {
-    return this.httpClient.put(`/admin/instructors/${instructorId}`, body);
-  }
+	async createInstructor(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/admin/instructors", body, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async deleteInstructor(instructorId: string) {
-    return this.httpClient.delete(`/admin/instructors/${instructorId}`);
-  }
+	async updateInstructor(
+		instructorId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/admin/instructors/${instructorId}`, body, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  // Public Instructors endpoints
-  async getInstructorById(instructorId: string) {
-    return this.httpClient.get(`/instructors/${instructorId}`);
-  }
+	async deleteInstructor(
+		instructorId: string,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.delete(`/admin/instructors/${instructorId}`, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async registerInstructor(body: any) {
-    return this.httpClient.post('/instructors', body);
-  }
+	// Public Instructors
+	async getInstructorById(
+		instructorId: string,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/instructors/${instructorId}`, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async updateInstructorPublic(instructorId: string, body: any) {
-    return this.httpClient.put(`/instructors/${instructorId}`, body);
-  }
+	async registerInstructor(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/instructors", body, {
+			headers: this.extractAuth(headers),
+		});
+	}
 
-  async deleteInstructorPublic(instructorId: string) {
-    return this.httpClient.delete(`/instructors/${instructorId}`);
-  }
+	async updateInstructorPublic(
+		instructorId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/instructors/${instructorId}`, body, {
+			headers: this.extractAuth(headers),
+		});
+	}
+
+	async deleteInstructorPublic(
+		instructorId: string,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.delete(`/instructors/${instructorId}`, {
+			headers: this.extractAuth(headers),
+		});
+	}
 }
 
 export const userService = new UserService();

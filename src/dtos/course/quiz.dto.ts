@@ -1,68 +1,68 @@
-type Json = Record<string, any>;
+type Json = Record<string, unknown>;
 
 export interface QuizSectionInDTO {
-  sectionId: string;
-  description: string;
-  title: string;
-  aiGenerated: boolean;
-  generationTaskId: string | null;
-  difficultyDistribution: Json;
-  adaptativeLogic: Json;
+	sectionId: string;
+	description: string;
+	title: string;
+	aiGenerated: boolean;
+	generationTaskId: string | null;
+	difficultyDistribution: Json;
+	adaptativeLogic: Json;
 }
 
 export interface QuizSectionUpdateDTO extends QuizSectionInDTO {
-  active: boolean;
-  durationMinutes: number;
+	active: boolean;
+	durationMinutes: number;
 }
 
 export interface QuizSectionOutLightDTO {
-  idQuiz: string;
-  createdAt: Date;
-  active: boolean;
-  durationMinutes: number;
-  sectionId: string;
-  title: string;
+	idQuiz: string;
+	createdAt: Date;
+	active: boolean;
+	durationMinutes: number;
+	sectionId: string;
+	title: string;
 }
 
 export interface QuizSectionOutHeavyDTO extends QuizSectionOutLightDTO {
-  description: string;
-  aiGenerated: boolean;
-  generationTaskId: string | null;
-  difficultyDistribution: Json;
-  adaptativeLogic: Json;
+	description: string;
+	aiGenerated: boolean;
+	generationTaskId: string | null;
+	difficultyDistribution: Json;
+	adaptativeLogic: Json;
 }
 
 export interface QuestionQuizInDTO {
-  quizId: string;
-  question: string;
-  durationMinutes: number;
+	quizId: string;
+	question: string;
+	durationMinutes: number;
 }
 
 export interface QuestionQuizOutDTO extends QuestionQuizInDTO {
-  idQuizQuestion: string;
+	idQuizQuestion: string;
 }
 
 export interface OptionQuizInDTO {
-  quizQuestionId: string;
-  option: string;
-  isCorrect: boolean;
+	quizQuestionId: string;
+	option: string;
+	isCorrect: boolean;
 }
 
 export interface OptionQuizOutDTO extends OptionQuizInDTO {
-  idQuizOption: string;
+	idQuizOption: string;
 }
 
 export interface AttemptQuizInDTO {
-  quizId: string;
-  userId: string;
+	quizId: string;
+	userId: string;
 }
 
 export interface AttemptQuizUpdateDTO extends AttemptQuizInDTO {
-  grade: number | null;
+	grade: number | null;
 }
 
 export interface AttemptQuizOutDTO extends AttemptQuizUpdateDTO {
-  idQuizAttempt: string;
-  submittedAt: Date;
-  durationMinutes: number;
+	idQuizAttempt: string;
+	submittedAt: Date;
+	durationMinutes: number;
 }
