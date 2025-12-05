@@ -1,0 +1,81 @@
+### Variables
+@host = http://localhost:3001
+@basePath = /api/v1
+# Reemplaza este token con uno real obtenido desde Cognito
+@token = token_here
+
+### ===========================================
+### AUTHENTICATION ENDPOINTS (No requieren token)
+### ===========================================
+
+### Get Login URL
+GET {{host}}{{basePath}}/auth/login
+Accept: application/json
+
+###
+
+### Verify Token
+POST {{host}}{{basePath}}/auth/verify
+Content-Type: application/json
+
+{
+  "token": "{{token}}"
+}
+
+###
+
+### Get Logout URL
+GET {{host}}{{basePath}}/auth/logout
+Accept: application/json
+
+### ===========================================
+### AUTHENTICATED ENDPOINTS (Requieren token)
+### ===========================================
+
+### Health Check (No requiere autenticación)
+GET {{host}}{{basePath}}/health
+Accept: application/json
+
+###
+
+### Get Current User Info
+GET {{host}}{{basePath}}/auth/me
+Accept: application/json
+Authorization: Bearer {{token}}
+
+### ===========================================
+### COURSES
+### ===========================================
+
+### Get All Courses
+GET {{host}}{{basePath}}/courses?lightDTO=true
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Get Course By ID
+GET {{host}}{{basePath}}/courses/10
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Create Course
+POST {{host}}{{basePath}}/courses
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "instructorId": "id_instructor_test",
+  "title": "title-test",
+  "description": "description-test",
+  "price": 0,
+  "level": "INTERMEDIATE",
+  "aiGenerated": false,
+  "generationTaskId": "string",
+  "generationMetadata": {
+    "key": "value"
+  },
+  "lastAIUpdateAt": "2024-06-01T12:00:00Z"
+}

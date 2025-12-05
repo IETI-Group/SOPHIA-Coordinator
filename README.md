@@ -11,7 +11,16 @@ El Coordinator Service actúa como un punto de entrada único (API Gateway) para
 ```
 Cliente → Coordinator Service → User Service (localhost:3001)
                              → Course Service (localhost:3002)
+                             → Auth Service (localhost:3003)
 ```
+
+### Flujo de Autenticación
+
+El Coordinator Service actúa como un proxy para la autenticación:
+
+1. **Login/Callback/Logout**: Las peticiones se redirigen al Auth Service
+2. **Verificación de Tokens**: El middleware `authenticate` valida tokens contra el Auth Service
+3. **Forwarding de Headers**: Los headers de autorización se reenvían a los servicios downstream
 
 ## 🚀 Instalación
 
@@ -32,17 +41,21 @@ src/
 ├── config/
 │   └── env.ts                 # Configuración de variables de entorno
 ├── controllers/
+│   ├── auth.service.ts        # Controlador para rutas de autenticación
 │   ├── user.controller.ts     # Controlador para rutas de usuarios
 │   └── course.controller.ts   # Controlador para rutas de cursos
 ├── services/
 │   ├── http-client.service.ts # Cliente HTTP con axios
+│   ├── auth.service.ts        # Cliente para Auth Service
 │   ├── user.service.ts        # Cliente para User Service
 │   └── course.service.ts      # Cliente para Course Service
 ├── routes/
 │   ├── index.ts               # Router principal
+│   ├── auth.routes.ts         # Rutas de autenticación
 │   ├── user.routes.ts         # Rutas de usuarios
 │   └── course.routes.ts       # Rutas de cursos
 ├── middlewares/
+│   ├── auth.ts                # Middleware de autenticación
 │   ├── error-handler.ts       # Manejo global de errores
 │   └── validation.ts          # Validación de requests
 ├── dtos/                      # Data Transfer Objects compartidos
@@ -63,6 +76,13 @@ pnpm start
 ```
 
 ## 🌐 Endpoints
+
+### Auth Service Routes
+- `GET /api/v1/auth/login` - Obtener URL de login
+- `GET /api/v1/auth/callback` - Callback después del login
+- `GET /api/v1/auth/logout` - Obtener URL de logout
+- `GET /api/v1/auth/me` - Información del usuario autenticado
+- `POST /api/v1/auth/verify` - Verificar un token JWT
 
 ### User Service Routes
 - `GET /api/v1/users` - Obtener todos los usuarios
@@ -95,9 +115,14 @@ NODE_ENV=development
 # Services
 USER_SERVICE_URL=http://localhost:3001/api/v1
 COURSE_SERVICE_URL=http://localhost:3002/api/v1
+AUTH_SERVICE_URL=http://localhost:3003/api/v1
 
 # Timeout
 SERVICE_TIMEOUT=30000
+
+# Ollama (AI)
+OLLAMA_HOST=http://127.0.0.1:11434
+OLLAMA_MODEL=Llama2:7b-chat
 ```
 
 ## 📡 Manejo de Errores

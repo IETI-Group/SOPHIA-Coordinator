@@ -1,6 +1,6 @@
 import type { COURSE_LEVEL, COURSE_STATUS } from "../common/enums";
 
-type Json = Record<string, any>;
+type Json = Record<string, unknown>;
 
 export interface CourseInDTO {
 	instructorId: string | null;

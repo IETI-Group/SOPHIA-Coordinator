@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { courseController } from "../controllers/course.controller";
+import { courseController } from "../controllers/course.controller.js";
 
 const router: Router = Router();
 
@@ -43,7 +43,7 @@ router.get(
 	courseController.getLessons.bind(courseController),
 );
 router.get(
-	"/sections/:sectionId/lessons/:lessonId",
+	"/lessons/:id",
 	courseController.getLessonById.bind(courseController),
 );
 router.post(
@@ -51,12 +51,34 @@ router.post(
 	courseController.createLesson.bind(courseController),
 );
 router.put(
-	"/sections/:sectionId/lessons/:lessonId",
+	"/lessons/:id",
 	courseController.updateLesson.bind(courseController),
 );
 router.delete(
-	"/sections/:sectionId/lessons/:lessonId",
+	"/lessons/:id",
 	courseController.deleteLesson.bind(courseController),
+);
+
+// Lesson Contents routes
+router.get(
+	"/lessons/:lessonId/contents",
+	courseController.getLessonContents.bind(courseController),
+);
+router.get(
+	"/contents/:id",
+	courseController.getContentById.bind(courseController),
+);
+router.post(
+	"/lessons/:lessonId/contents",
+	courseController.createLessonContent.bind(courseController),
+);
+router.put(
+	"/contents/:id",
+	courseController.updateContent.bind(courseController),
+);
+router.delete(
+	"/contents/:id",
+	courseController.deleteContent.bind(courseController),
 );
 
 // Quizzes routes
@@ -64,20 +86,14 @@ router.get(
 	"/sections/:sectionId/quizzes",
 	courseController.getQuizzes.bind(courseController),
 );
-router.get(
-	"/sections/:sectionId/quizzes/:quizId",
-	courseController.getQuizById.bind(courseController),
-);
+router.get("/quizzes/:id", courseController.getQuizById.bind(courseController));
 router.post(
 	"/sections/:sectionId/quizzes",
 	courseController.createQuiz.bind(courseController),
 );
-router.put(
-	"/sections/:sectionId/quizzes/:quizId",
-	courseController.updateQuiz.bind(courseController),
-);
+router.put("/quizzes/:id", courseController.updateQuiz.bind(courseController));
 router.delete(
-	"/sections/:sectionId/quizzes/:quizId",
+	"/quizzes/:id",
 	courseController.deleteQuiz.bind(courseController),
 );
 
@@ -158,7 +174,7 @@ router.get(
 	courseController.getAISpecs.bind(courseController),
 );
 router.get(
-	"/lessons/:lessonId/ai-specs/:specId",
+	"/ai-specs/:id",
 	courseController.getAISpecById.bind(courseController),
 );
 router.post(
@@ -166,12 +182,56 @@ router.post(
 	courseController.createAISpec.bind(courseController),
 );
 router.put(
-	"/lessons/:lessonId/ai-specs/:specId",
+	"/ai-specs/:id",
 	courseController.updateAISpec.bind(courseController),
 );
 router.delete(
-	"/lessons/:lessonId/ai-specs/:specId",
+	"/ai-specs/:id",
 	courseController.deleteAISpec.bind(courseController),
+);
+
+// Forums routes
+router.get("/forums", courseController.getForums.bind(courseController));
+router.get("/forums/:id", courseController.getForumById.bind(courseController));
+router.get(
+	"/courses/:courseId/forum",
+	courseController.getForumByCourseId.bind(courseController),
+);
+router.post("/forums", courseController.createForum.bind(courseController));
+router.put("/forums/:id", courseController.updateForum.bind(courseController));
+router.delete(
+	"/forums/:id",
+	courseController.deleteForum.bind(courseController),
+);
+
+// Forum Messages routes
+router.get(
+	"/forum-messages",
+	courseController.getForumMessages.bind(courseController),
+);
+router.get(
+	"/forum-messages/:id",
+	courseController.getForumMessageById.bind(courseController),
+);
+router.get(
+	"/forums/:forumId/messages",
+	courseController.getForumMessagesByForumId.bind(courseController),
+);
+router.get(
+	"/forum-messages/:parentMessageId/replies",
+	courseController.getForumMessageReplies.bind(courseController),
+);
+router.post(
+	"/forum-messages",
+	courseController.createForumMessage.bind(courseController),
+);
+router.put(
+	"/forum-messages/:id",
+	courseController.updateForumMessage.bind(courseController),
+);
+router.delete(
+	"/forum-messages/:id",
+	courseController.deleteForumMessage.bind(courseController),
 );
 
 export default router;

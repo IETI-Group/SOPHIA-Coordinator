@@ -5,7 +5,7 @@ import type {
 	LESSON_TYPE,
 } from "../common/enums";
 
-type Json = Record<string, any>;
+type Json = Record<string, unknown>;
 
 export interface LessonSectionInDTO {
 	sectionId: string;

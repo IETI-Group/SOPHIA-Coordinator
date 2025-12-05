@@ -1,4 +1,4 @@
-type Json = Record<string, any>;
+type Json = Record<string, unknown>;
 
 export interface AISpecsLessonInDTO {
 	lessonContentId: string;

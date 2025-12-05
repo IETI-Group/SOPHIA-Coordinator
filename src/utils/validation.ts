@@ -18,7 +18,7 @@ export const validateParams = (
 };
 
 export const validateBody = (
-	body: Record<string, any>,
+	body: Record<string, unknown>,
 	requiredFields: string[],
 	res: Response,
 ): boolean => {
