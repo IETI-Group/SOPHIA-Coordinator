@@ -14,9 +14,14 @@ class AuthService {
 		return authorization ? { authorization } : {};
 	}
 
-	async login(queryParams?: unknown, headers?: Record<string, string>) {
-		return this.httpClient.get("/auth/login", {
-			params: queryParams,
+	async signup(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/auth/signup", body, {
+			headers: this.extractAuth(headers),
+		});
+	}
+
+	async login(body: unknown, headers?: Record<string, string>) {
+		return this.httpClient.post("/auth/login", body, {
 			headers: this.extractAuth(headers),
 		});
 	}

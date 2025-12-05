@@ -10,14 +10,28 @@ export class AuthController {
 		};
 	}
 
+	signup = async (
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> => {
+		try {
+			const { headers } = this.buildRequestConfig(req);
+			const response = await authService.signup(req.body, headers);
+			res.status(201).json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	};
+
 	login = async (
 		req: Request,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> => {
 		try {
-			const { queryParams, headers } = this.buildRequestConfig(req);
-			const response = await authService.login(queryParams, headers);
+			const { headers } = this.buildRequestConfig(req);
+			const response = await authService.login(req.body, headers);
 			res.json(response.data);
 		} catch (error) {
 			next(error);

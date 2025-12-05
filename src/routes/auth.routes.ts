@@ -5,11 +5,18 @@ const router: IRouter = Router();
 const authController = new AuthController();
 
 /**
- * @route   GET /auth/login
- * @desc    Redirige al servicio de autenticación para obtener la URL de login
+ * @route   POST /auth/signup
+ * @desc    Registra un nuevo usuario en el sistema
  * @access  Public
  */
-router.get("/login", authController.login);
+router.post("/signup", authController.signup);
+
+/**
+ * @route   POST /auth/login
+ * @desc    Inicia sesión de un usuario en el sistema
+ * @access  Public
+ */
+router.post("/login", authController.login);
 
 /**
  * @route   GET /auth/callback
