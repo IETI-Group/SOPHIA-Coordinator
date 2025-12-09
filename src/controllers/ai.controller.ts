@@ -6,7 +6,8 @@ export class AIController {
 	async chat(req: Request, res: Response, next: NextFunction) {
 		try {
 			if (!validateBody(req.body, ["message"], res)) return;
-			const response = await aiService.chat(req.body);
+			const token = req.headers.authorization?.replace("Bearer ", "") || "";
+			const response = await aiService.chat(req.body, token);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -20,7 +21,8 @@ export class AIController {
 	) {
 		try {
 			if (!validateBody(req.body, ["idea", "guide"], res)) return;
-			const response = await aiService.generateCourseStructure(req.body);
+			const token = req.headers.authorization?.replace("Bearer ", "") || "";
+			const response = await aiService.generateCourseStructure(req.body, token);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -29,7 +31,8 @@ export class AIController {
 
 	async listChats(req: Request, res: Response, next: NextFunction) {
 		try {
-			const response = await aiService.listChats(req.query);
+			const token = req.headers.authorization?.replace("Bearer ", "") || "";
+			const response = await aiService.listChats(token, req.query);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -39,7 +42,8 @@ export class AIController {
 	async getChatHistory(req: Request, res: Response, next: NextFunction) {
 		try {
 			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
-			const response = await aiService.getChatHistory(req.params.id);
+			const token = req.headers.authorization?.replace("Bearer ", "") || "";
+			const response = await aiService.getChatHistory(req.params.id, token);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
@@ -49,7 +53,8 @@ export class AIController {
 	async deleteChat(req: Request, res: Response, next: NextFunction) {
 		try {
 			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
-			const response = await aiService.deleteChat(req.params.id);
+			const token = req.headers.authorization?.replace("Bearer ", "") || "";
+			const response = await aiService.deleteChat(req.params.id, token);
 			res.json(response.data);
 		} catch (error) {
 			next(error);
