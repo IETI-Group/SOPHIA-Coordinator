@@ -5,7 +5,11 @@ import { authenticate } from "../middlewares/auth.js";
 const router: Router = Router();
 
 router.post("/chat", authenticate, aiController.chat);
-router.post("/course-assistant", authenticate, aiController.generateCourseStructure);
+router.post(
+	"/course-assistant",
+	authenticate,
+	aiController.generateCourseStructure,
+);
 
 // Chat history management
 router.get("/chats", authenticate, aiController.listChats);

@@ -643,6 +643,60 @@ class CourseService {
 			headers: this.extractAllowedHeaders(headers),
 		});
 	}
+
+	// Inscriptions
+	async getInscriptions(
+		courseId: string,
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get(`/courses/${courseId}/inscriptions`, {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async getAllInscriptions(
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get("/inscriptions", {
+			params: queryParams,
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async getInscriptionById(id: string, headers?: Record<string, string>) {
+		return this.httpClient.get(`/inscriptions/${id}`, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async createInscription(
+		courseId: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.post(`/courses/${courseId}/inscriptions`, body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async updateInscription(
+		id: string,
+		body: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.put(`/inscriptions/${id}`, body, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
+
+	async deleteInscription(id: string, headers?: Record<string, string>) {
+		return this.httpClient.delete(`/inscriptions/${id}`, {
+			headers: this.extractAllowedHeaders(headers),
+		});
+	}
 }
 
 export const courseService = new CourseService();
