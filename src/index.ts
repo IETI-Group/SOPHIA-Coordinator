@@ -1,5 +1,6 @@
 import express, { type Application } from "express";
 import morgan from "morgan";
+import { networkInterfaces } from "os";
 import { env, validateEnvConfig } from "./config/env.js";
 import { errorHandler } from "./middlewares/error-handler.js";
 import router from "./routes/index.js";
@@ -56,8 +57,26 @@ app.get("/", (_req, res) => {
 app.use(errorHandler);
 
 // Start server
-const PORT = env.port;
-app.listen(PORT, () => {
+const PORT = Number(env.port) || 3000;
+
+const getLocalIp = () => {
+	const nets = networkInterfaces();
+	for (const name of Object.keys(nets)) {
+		const interfaces = nets[name];
+		if (interfaces) {
+			for (const net of interfaces) {
+				// Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
+				if (net.family === "IPv4" && !net.internal) {
+					return net.address;
+				}
+			}
+		}
+	}
+	return "localhost";
+};
+
+app.listen(PORT, "0.0.0.0", () => {
+	const ip = getLocalIp();
 	logger.info(`
 ═════════════════════════════════════════════════════════════
                                                            
@@ -69,6 +88,7 @@ app.listen(PORT, () => {
                                                            
                                                            
         Coordinator Service: http://localhost:${PORT}/api/v1
+        Network Access:      http://${ip}:${PORT}/api/v1
         User Service: ${env.userServiceUrl}                
         Course Service: ${env.courseServiceUrl}
 	Ai Service: ${env.aiServiceUrl}

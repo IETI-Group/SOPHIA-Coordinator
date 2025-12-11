@@ -546,7 +546,7 @@ export class UserController {
 	}
 
 	// Admin - Instructors
-	async getInstructors(req: Request, res: Response, next: NextFunction) {
+	async getAdminInstructors(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { queryParams, headers } = this.buildRequestConfig(req);
 			const response = await userService.getInstructors(queryParams, headers);
@@ -604,6 +604,16 @@ export class UserController {
 	}
 
 	// Public Instructors
+	async getInstructors(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { queryParams, headers } = this.buildRequestConfig(req);
+			const response = await userService.getInstructors(queryParams, headers);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
 	async getInstructorById(req: Request, res: Response, next: NextFunction) {
 		try {
 			if (

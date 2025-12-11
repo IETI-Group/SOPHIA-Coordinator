@@ -4,6 +4,7 @@ export * from "./category.dto";
 export * from "./course.dto";
 export * from "./forum.dto";
 export * from "./forum-message.dto";
+export * from "./inscription.dto";
 export * from "./lesson.dto";
 export * from "./quiz.dto";
 export * from "./resource.dto";
