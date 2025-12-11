@@ -333,15 +333,6 @@ class UserService {
 	}
 
 	// Admin - Instructors
-	async getInstructors(
-		queryParams?: unknown,
-		headers?: Record<string, string>,
-	) {
-		return this.httpClient.get("/admin/instructors", {
-			params: queryParams,
-			headers: this.extractAuth(headers),
-		});
-	}
 
 	async createInstructor(body: unknown, headers?: Record<string, string>) {
 		return this.httpClient.post("/admin/instructors", body, {
@@ -369,6 +360,16 @@ class UserService {
 	}
 
 	// Public Instructors
+	async getInstructors(
+		queryParams?: unknown,
+		headers?: Record<string, string>,
+	) {
+		return this.httpClient.get("/instructors", {
+			params: queryParams,
+			headers: this.extractAuth(headers),
+		});
+	}
+
 	async getInstructorById(
 		instructorId: string,
 		headers?: Record<string, string>,

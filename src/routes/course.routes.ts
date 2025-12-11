@@ -234,4 +234,30 @@ router.delete(
 	courseController.deleteForumMessage.bind(courseController),
 );
 
+// Inscriptions routes
+router.get(
+	"/inscriptions",
+	courseController.getAllInscriptions.bind(courseController),
+);
+router.get(
+	"/courses/:courseId/inscriptions",
+	courseController.getInscriptions.bind(courseController),
+);
+router.get(
+	"/inscriptions/:id",
+	courseController.getInscriptionById.bind(courseController),
+);
+router.post(
+	"/courses/:courseId/inscriptions",
+	courseController.createInscription.bind(courseController),
+);
+router.put(
+	"/inscriptions/:id",
+	courseController.updateInscription.bind(courseController),
+);
+router.delete(
+	"/inscriptions/:id",
+	courseController.deleteInscription.bind(courseController),
+);
+
 export default router;

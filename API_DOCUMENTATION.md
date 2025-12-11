@@ -42,1352 +42,502 @@ OLLAMA_MODEL=llama3.2
 
 **URL Base Global:** `/api/v1`
 
-### 1. Servicio de Usuarios (`/api/v1`)
-
-Gestiona usuarios, roles, instructores y cuentas vinculadas.
-
-#### Usuarios
-- `GET /users`: Obtener lista de usuarios.
-- `GET /users/id/:id`: Obtener usuario por ID.
-- `GET /users/email/:email`: Obtener usuario por email.
-- `POST /users`: Crear un nuevo usuario.
-  - **Body:** `{ email, firstName, lastName, birthDate }`
-- `PUT /users/:id`: Actualizar usuario.
-- `DELETE /users/:id`: Eliminar usuario.
-
-#### Roles y Permisos (Admin)
-- `GET /admin/roles`: Listar roles disponibles.
-- `POST /admin/roles`: Crear un nuevo rol.
-- `POST /admin/assignations`: Asignar un rol a un usuario.
-  - **Body:** `{ userId, roleName }`
-
-#### Instructores
-- `GET /instructors/:instructorId`: Ver perfil público de instructor.
-- `POST /instructors`: Registrarse como instructor.
-
-#### Reseñas (Reviews)
-- `GET /users/courses/:courseId/reviews`: Ver reseñas de un curso.
-- `POST /users/:id/reviews`: Crear una reseña.
+**Autenticación:**
+Todos los endpoints, excepto los listados en la sección de **Authentication**, requieren el header:
+`Authorization: Bearer <token>`
 
 ---
 
-### 2. Servicio de Cursos (`/api/v1`)
+## Authentication
 
-Gestiona el contenido educativo: cursos, lecciones, exámenes y recursos.
+Endpoints para autenticación mediante AWS Cognito. El sistema soporta dos flujos de autenticación:
+1. **Flujo principal:** Login con email y contraseña (`POST /auth/login`)
+2. **Flujo alternativo:** OAuth2 con Cognito Hosted UI (`GET /auth/login/url` + `/auth/callback`)
 
----
+### POST /auth/signup
+Registra un nuevo usuario en la base de datos y en AWS Cognito.
 
-## Cursos
-
-### GET /courses
-Obtiene todos los cursos con paginación y filtros.
-
-**Query Parameters:**
-| Parámetro | Tipo | Requerido | Descripción | Valores |
-|-----------|------|-----------|-------------|---------|
-| page | number | No | Número de página | Default: 1 |
-| size | number | No | Cantidad por página | Default: 10, Max: 100 |
-| sort | string | No | Campo para ordenar | title, price, level, createdAt, etc. |
-| order | string | No | Orden de clasificación | asc, desc |
-| lightDTO | boolean | No | Usar DTO ligero | true, false (default) |
-| title | string | No | Filtrar por título | |
-| level | string | No | Filtrar por nivel | BEGINNER, INTERMEDIATE, ADVANCED, EXPERT |
-| active | boolean | No | Filtrar por estado activo | |
-
-**Respuesta (200):**
-```json
-{
-  "success": true,
-  "message": "Courses retrieved successfully",
-  "data": [
-    {
-      "idCourse": "uuid",
-      "title": "Introduction to AI",
-      "description": "Learn the basics of AI...",
-      "price": 49.99,
-      "level": "BEGINNER",
-      "active": true,
-      "averageReviews": 4.5,
-      "totalLessons": 10,
-      "status": "PUBLISHED",
-      "createdAt": "2025-01-01T00:00:00.000Z"
-    }
-  ],
-  "timestamp": "2025-11-20T10:30:00.000Z",
-  "pagination": {
-    "page": 1,
-    "limit": 10,
-    "total": 50,
-    "totalPages": 5,
-    "hasNext": true,
-    "hasPrev": false
-  }
-}
-```
-
----
-
-### GET /courses/:id
-Obtiene un curso por su ID.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID del curso (UUID) |
-
-**Query Parameters:**
-| Parámetro | Tipo | Requerido | Descripción |
-|-----------|------|-----------|-------------|
-| lightDTO | boolean | No | Usar DTO ligero (default: true) |
-
-**Respuesta (200) - lightDTO=true:**
-```json
-{
-  "success": true,
-  "message": "Course retrieved successfully",
-  "data": {
-    "idCourse": "uuid",
-    "instructorId": "uuid-instructor",
-    "title": "Introduction to AI",
-    "description": "Full description...",
-    "price": 49.99,
-    "level": "BEGINNER",
-    "active": true,
-    "status": "PUBLISHED",
-    "averageReviews": 4.5,
-    "durationHours": 10,
-    "totalLessons": 20,
-    "totalReviews": 100,
-    "totalEnrollments": 500,
-    "createdAt": "2025-01-01T00:00:00.000Z",
-    "updatedAt": "2025-01-02T00:00:00.000Z",
-    "publishedAt": "2025-01-03T00:00:00.000Z"
-  },
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### POST /courses
-Crea un nuevo curso.
+**Acceso:** Público
 
 **Request Body:**
 ```json
 {
-  "instructorId": "uuid-instructor",
-  "title": "Advanced TypeScript",
-  "description": "Deep dive into TS features",
-  "price": 99.99,
-  "level": "ADVANCED",
-  "aiGenerated": false,
-  "generationMetadata": {},
-  "generationTaskId": null,
-  "lastAIUpdateAt": null
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john@example.com",
+  "password": "SecurePass123!",
+  "birthDate": "1990-01-01",
+  "profilePicture": "https://example.com/photo.jpg",
+  "bio": "Estudiante apasionado por la tecnología",
+  "learningStyle": "visual"
 }
 ```
 
 **Validaciones:**
-- `title`: String requerido, max 100 chars
-- `description`: String requerido
-- `price`: Number requerido
-- `level`: Enum requerido (BEGINNER, INTERMEDIATE, ADVANCED, EXPERT)
+- `firstName`: String requerido, no vacío
+- `lastName`: String requerido, no vacío
+- `email`: Email válido, requerido
+- `password`: String requerido (mínimo 8 caracteres, mayúsculas, minúsculas, números y caracteres especiales)
+- `birthDate`: Fecha ISO 8601 requerida
+- `profilePicture`: URL válida (opcional)
+- `bio`: String (opcional)
+- `learningStyle`: Enum: visual, auditory, kinesthetic (opcional)
 
 **Respuesta (201):**
 ```json
 {
   "success": true,
-  "message": "Course created successfully",
-  "data": "uuid-del-nuevo-curso",
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### PUT /courses/:id
-Actualiza un curso existente.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID del curso |
-
-**Request Body:** (Todos los campos opcionales)
-```json
-{
-  "title": "Updated Title",
-  "price": 79.99,
-  "active": true
-}
-```
-
-**Respuesta (200):**
-```json
-{
-  "success": true,
-  "message": "Course updated successfully",
-  "data": null,
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### DELETE /courses/:id
-Elimina un curso.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID del curso |
-
-**Respuesta (200):**
-```json
-{
-  "success": true,
-  "message": "Course deleted successfully",
-  "data": null,
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-## Secciones
-
-### GET /courses/:courseId/sections
-Obtiene todas las secciones de un curso.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| courseId | string | ID del curso |
-
-**Query Parameters:** lightDTO, filters, sorting
-
-**Respuesta (200):**
-```json
-{
-  "success": true,
-  "message": "Sections retrieved successfully",
-  "data": [
-    {
-      "idSection": "uuid",
-      "title": "Module 1: Basics",
-      "order": 1,
-      "durationHours": 2,
-      "active": true
-    }
-  ],
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### POST /courses/:courseId/sections
-Crea una nueva sección en un curso.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| courseId | string | ID del curso |
-
-**Request Body:**
-```json
-{
-  "courseId": "uuid-del-curso",
-  "title": "Module 1",
-  "description": "Introduction",
-  "order": 1,
-  "aiGenerated": false,
-  "generationTaskId": null,
-  "suggestedByAi": false
-}
-```
-
-**Respuesta (201):**
-```json
-{
-  "success": true,
-  "message": "Section created successfully",
-  "data": "uuid-de-la-seccion",
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-## Lecciones
-
-### GET /sections/:sectionId/lessons
-Obtiene todas las lecciones de una sección.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| sectionId | string | ID de la sección |
-
-**Query Parameters:**
-| Parámetro | Tipo | Requerido | Descripción |
-|-----------|------|-----------|-------------|
-| lightDTO | boolean | No | Usar DTO ligero (default: true) |
-
-**Respuesta (200) - lightDTO=true:**
-```json
-{
-  "success": true,
-  "message": "Lessons retrieved successfully",
-  "data": [
-    {
-      "idLesson": "uuid",
-      "title": "Lesson 1",
-      "description": "Intro to topic",
-      "lessonType": "THEORY",
-      "durationMinutes": 15,
-      "order": 1,
-      "active": true,
-      "createdAt": "2025-01-01T00:00:00.000Z",
-      "sectionId": "uuid-section"
-    }
-  ],
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### POST /sections/:sectionId/lessons
-Crea una nueva lección.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| sectionId | string | ID de la sección |
-
-**Request Body:**
-```json
-{
-  "sectionId": "uuid-de-la-seccion",
-  "title": "Lesson 1",
-  "description": "Intro to topic",
-  "order": 1,
-  "durationMinutes": 15,
-  "lessonType": "THEORY",
-  "estimatedDifficulty": 1.0,
-  "aiGenerated": false,
-  "generationTaskId": null
-}
-```
-
-**Respuesta (201):**
-```json
-{
-  "success": true,
-  "message": "Lesson created successfully",
-  "data": "uuid-de-la-leccion",
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### GET /lessons/:id
-Obtiene una lección por ID.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID de la lección |
-
-**Query Parameters:**
-| Parámetro | Tipo | Requerido | Descripción |
-|-----------|------|-----------|-------------|
-| lightDTO | boolean | No | Usar DTO ligero (default: true) |
-
-**Respuesta (200):**
-```json
-{
-  "success": true,
-  "message": "Lesson retrieved successfully",
+  "message": "User registered successfully. Please check your email to confirm your account.",
   "data": {
-    "idLesson": "uuid",
-    "title": "Lesson 1",
-    "description": "Intro to topic",
-    "lessonType": "THEORY",
-    "durationMinutes": 15,
-    "order": 1,
-    "active": true
-  },
-  "timestamp": "2025-11-20T10:30:00.000Z"
+    "userId": "uuid",
+    "cognitoSub": "cognito-uuid"
+  }
 }
 ```
+
+**Errores:**
+| Código | Error | Descripción |
+|--------|-------|-------------|
+| 400 | VALIDATION_ERROR | Datos de entrada inválidos |
+| 409 | USER_ALREADY_EXISTS | Email ya registrado |
+| 500 | INTERNAL_SERVER_ERROR | Error en el registro |
 
 ---
 
-### PUT /lessons/:id
-Actualiza una lección.
+### POST /auth/confirm-email
+Confirma el email de un usuario usando el código de verificación enviado por email.
 
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID de la lección |
-
-**Request Body:** (Todos los campos opcionales)
-```json
-{
-  "title": "Updated Lesson Title",
-  "durationMinutes": 20
-}
-```
-
-**Respuesta (200):**
-```json
-{
-  "success": true,
-  "message": "Lesson updated successfully",
-  "data": null,
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### DELETE /lessons/:id
-Elimina una lección.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID de la lección |
-
-**Respuesta (200):**
-```json
-{
-  "success": true,
-  "message": "Lesson deleted successfully",
-  "data": null,
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-## Contenido de Lecciones
-
-### GET /lessons/:lessonId/contents
-Obtiene el contenido de una lección.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| lessonId | string | ID de la lección |
-
-**Query Parameters:**
-| Parámetro | Tipo | Requerido | Descripción |
-|-----------|------|-----------|-------------|
-| lightDTO | boolean | No | Usar DTO ligero (default: true) |
-
-**Respuesta (200):**
-```json
-{
-  "success": true,
-  "message": "Lesson contents retrieved successfully",
-  "data": [
-    {
-      "idLessonContent": "uuid",
-      "version": 1,
-      "lessonId": "uuid-lesson",
-      "active": true,
-      "isCurrentVersion": true,
-      "difficultyLevel": "BEGINNER",
-      "learningTechnique": "VISUAL",
-      "orderPreference": 1,
-      "metadata": {}
-    }
-  ],
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### POST /lessons/:lessonId/contents
-Crea nuevo contenido para una lección.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| lessonId | string | ID de la lección |
+**Acceso:** Público
 
 **Request Body:**
 ```json
 {
-  "lessonId": "uuid-lesson",
-  "metadata": {},
-  "difficultyLevel": "BEGINNER",
-  "learningTechnique": "VISUAL",
-  "orderPreference": 1,
-  "contentType": "TEXT"
+  "email": "john@example.com",
+  "confirmationCode": "123456"
 }
 ```
 
-**Respuesta (201):**
-```json
-{
-  "success": true,
-  "message": "Content created successfully",
-  "data": "uuid-del-contenido",
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### GET /contents/:id
-Obtiene un contenido específico por ID.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID del contenido |
-
----
-
-### PUT /contents/:id
-Actualiza un contenido.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID del contenido |
-
-**Request Body:** (Todos los campos opcionales)
-```json
-{
-  "metadata": { "text": "Updated content..." },
-  "active": true
-}
-```
-
----
-
-### DELETE /contents/:id
-Elimina un contenido.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID del contenido |
-
----
-
-## Cuestionarios (Quizzes)
-
-### GET /sections/:sectionId/quizzes
-Obtiene los cuestionarios de una sección.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| sectionId | string | ID de la sección |
+**Validaciones:**
+- `email`: Email válido, requerido
+- `confirmationCode`: String requerido (código de 6 dígitos)
 
 **Respuesta (200):**
 ```json
 {
   "success": true,
-  "message": "Quizzes retrieved successfully",
-  "data": [
-    {
-      "idQuiz": "uuid",
-      "title": "Final Exam",
-      "durationMinutes": 60,
-      "active": true
-    }
-  ],
-  "timestamp": "2025-11-20T10:30:00.000Z"
+  "message": "Email confirmed successfully. You can now login."
 }
 ```
 
+**Errores:**
+| Código | Error | Descripción |
+|--------|-------|-------------|
+| 400 | VALIDATION_ERROR | Email o código inválido |
+| 400 | INVALID_CODE | Código de verificación incorrecto |
+| 404 | USER_NOT_FOUND | Usuario no encontrado |
+| 500 | INTERNAL_SERVER_ERROR | Error al confirmar email |
+
 ---
 
-### POST /sections/:sectionId/quizzes
-Crea un nuevo cuestionario.
+### POST /auth/resend-confirmation
+Reenvía el código de confirmación al email del usuario.
 
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| sectionId | string | ID de la sección |
+**Acceso:** Público
 
 **Request Body:**
 ```json
 {
-  "sectionId": "uuid-de-la-seccion",
-  "title": "Quiz 1",
-  "description": "Test your knowledge",
-  "aiGenerated": false,
-  "difficultyDistribution": {},
-  "adaptativeLogic": {}
+  "email": "john@example.com"
 }
 ```
 
-**Respuesta (201):**
-```json
-{
-  "success": true,
-  "message": "Quiz created successfully",
-  "data": "uuid-del-quiz",
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### GET /quizzes/:id
-Obtiene un cuestionario por ID.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID del cuestionario |
-
----
-
-### PUT /quizzes/:id
-Actualiza un cuestionario.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID del cuestionario |
-
----
-
-### DELETE /quizzes/:id
-Elimina un cuestionario.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID del cuestionario |
-
----
-
-## Tareas (Assignments)
-
-### GET /lessons/:lessonId/assignments
-Obtiene las tareas de una lección.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| lessonId | string | ID de la lección |
+**Validaciones:**
+- `email`: Email válido, requerido
 
 **Respuesta (200):**
 ```json
 {
   "success": true,
-  "message": "Assignments retrieved successfully",
-  "data": [
-    {
-      "idAssignment": "uuid",
-      "title": "Homework 1",
-      "dueDate": "2025-12-31T23:59:59.000Z",
-      "maxScore": 100
-    }
-  ],
-  "timestamp": "2025-11-20T10:30:00.000Z"
+  "message": "Confirmation code resent successfully. Please check your email."
 }
 ```
 
+**Errores:**
+| Código | Error | Descripción |
+|--------|-------|-------------|
+| 400 | VALIDATION_ERROR | Email inválido |
+| 404 | USER_NOT_FOUND | Usuario no encontrado |
+| 400 | ALREADY_CONFIRMED | Email ya confirmado |
+| 500 | INTERNAL_SERVER_ERROR | Error al reenviar código |
+
 ---
 
-### POST /lessons/:lessonId/assignments
-Crea una nueva tarea.
+### POST /auth/login
+Login con email y contraseña (flujo principal de autenticación).
 
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| lessonId | string | ID de la lección |
+**Acceso:** Público
 
 **Request Body:**
 ```json
 {
-  "lessonId": "uuid-de-la-leccion",
-  "title": "Project Submission",
-  "instructions": "Upload your code...",
-  "maxFileSizeMb": 10,
-  "allowedTypes": "PDF",
-  "dueDate": "2025-12-31T23:59:59.000Z",
-  "maxScore": 100
+  "email": "john@example.com",
+  "password": "SecurePass123!"
 }
 ```
 
-**Respuesta (201):**
-```json
-{
-  "success": true,
-  "message": "Assignment created successfully",
-  "data": "uuid-de-la-tarea",
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-## Recursos
-
-### GET /resources
-Obtiene todos los recursos.
-
-**Query Parameters:**
-| Parámetro | Tipo | Requerido | Descripción |
-|-----------|------|-----------|-------------|
-| lightDTO | boolean | No | Usar DTO ligero (default: true) |
+**Validaciones:**
+- `email`: Email válido, requerido
+- `password`: String requerido
 
 **Respuesta (200):**
 ```json
 {
   "success": true,
-  "message": "Resources retrieved successfully",
-  "data": [
-    {
-      "idResource": "uuid",
-      "name": "Course Syllabus",
-      "type": "PDF",
-      "url": "https://storage...",
-      "fileSizeMb": 2.5
-    }
-  ],
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### POST /resources
-Crea un nuevo recurso.
-
-**Request Body:**
-```json
-{
-  "entityReference": "uuid-referencia",
-  "discriminant": "COURSE",
-  "name": "Intro Video",
-  "type": "VIDEO",
-  "url": "https://video...",
-  "fileSizeMb": 50
-}
-```
-
-**Respuesta (201):**
-```json
-{
-  "success": true,
-  "message": "Resource created successfully",
-  "data": "uuid-del-recurso",
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### GET /resources/:id
-Obtiene un recurso por ID.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID del recurso |
-
----
-
-## Especificaciones de IA
-
-### GET /lessons/:lessonId/ai-specs
-Obtiene especificaciones de IA para una lección.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| lessonId | string | ID de la lección |
-
-**Respuesta (200):**
-```json
-{
-  "success": true,
-  "message": "AI Specs retrieved successfully",
-  "data": [
-    {
-      "idLessonSpec": "uuid",
-      "generationPromptSummary": "Create a lesson about...",
-      "contentStructure": {}
-    }
-  ],
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### POST /lessons/:lessonId/ai-specs
-Crea una nueva especificación de IA.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| lessonId | string | ID de la lección |
-
-**Request Body:**
-```json
-{
-  "lessonContentId": "uuid-contenido",
-  "generationPromptSummary": "Prompt used...",
-  "contentStructure": {},
-  "estimatedVideoDuration": 300
-}
-```
-
-**Respuesta (201):**
-```json
-{
-  "success": true,
-  "message": "AI Spec created successfully",
-  "data": "uuid-de-la-spec",
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### GET /ai-specs/:id
-Obtiene una especificación de IA por ID.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID de la especificación |
-
----
-
-### PUT /ai-specs/:id
-Actualiza una especificación de IA.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID de la especificación |
-
----
-
-### DELETE /ai-specs/:id
-Elimina una especificación de IA.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID de la especificación |
-
----
-
-## Categorías y Etiquetas
-
-### GET /categories
-Obtiene todas las categorías.
-
-**Respuesta (200):**
-```json
-{
-  "success": true,
-  "message": "Categories retrieved successfully",
-  "data": [
-    {
-      "idCategory": "uuid",
-      "name": "Programming",
-      "description": "Software development courses",
-      "active": true
-    }
-  ],
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### GET /tags
-Obtiene todos los tags.
-
-**Respuesta (200):**
-```json
-{
-  "success": true,
-  "message": "Tags retrieved successfully",
-  "data": [
-    {
-      "categoryId": "uuid",
-      "courseId": "uuid",
-      "createdAt": "2025-01-01T00:00:00.000Z"
-    }
-  ],
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### 3. Servicio de Inteligencia Artificial (`/api/v1/ai`)
-
-Potenciado por Ollama (Llama 3.2).
-
----
-
-## Chat con IA
-
-### POST /ai/chat
-Interactúa con el asistente de IA. Soporta historial de conversación mediante tokens de contexto.
-
-**Request Body:**
-| Campo | Tipo | Requerido | Descripción |
-|-------|------|----------|-------------|
-| `message` | string | Sí | El mensaje actual que se envía a la IA. |
-| `context` | number[] | No | Array de números (tokens) que representa el historial de la conversación. |
-| `model` | string | No | El modelo de IA a utilizar (ej: `llama3.2`, `mistral`). Si no se envía, usa el configurado por defecto. |
-
-**Ejemplo:**
-```json
-{
-  "message": "¿Qué es una variable?",
-  "context": [123, 456] // Opcional
-}
-```
-
-**Respuesta (200):**
-```json
-{
-  "response": "Una variable es un contenedor para almacenar datos...",
-  "context": [123, 456, 789] // Guardar para la siguiente petición
-}
-```
-
-**Nota sobre el contexto:** El campo `context` es un array de números que el modelo genera después de cada respuesta. Este array codifica toda la conversación previa. Para mantener la memoria del chat, debes guardar este array y enviarlo de vuelta en la siguiente petición.
-
----
-
-### GET /ai/chats
-Lista los historiales de chat guardados.
-
-**Respuesta (200):**
-```json
-{
-  "success": true,
-  "message": "Chats retrieved successfully",
-  "data": [
-    {
-      "id": "chat-uuid-1",
-      "title": "Conversación sobre Python",
-      "createdAt": "2025-01-01T00:00:00.000Z",
-      "lastMessageAt": "2025-01-01T12:00:00.000Z"
-    }
-  ],
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
----
-
-### GET /ai/chats/:id
-Obtiene el historial completo de un chat específico.
-
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID del chat |
-
-**Respuesta (200):**
-```json
-{
-  "success": true,
-  "message": "Chat history retrieved successfully",
+  "message": "Login successful",
   "data": {
-    "id": "chat-uuid-1",
-    "title": "Conversación sobre Python",
-    "messages": [
-      { "role": "user", "content": "¿Qué es Python?" },
-      { "role": "assistant", "content": "Python es un lenguaje de programación..." }
-    ],
-    "createdAt": "2025-01-01T00:00:00.000Z"
-  },
-  "timestamp": "2025-11-20T10:30:00.000Z"
+    "accessToken": "eyJraWQiOiJ...",
+    "idToken": "eyJraWQiOiJ...",
+    "refreshToken": "eyJjdHkiOiJ...",
+    "expiresIn": 3600,
+    "tokenType": "Bearer",
+    "user": {
+      "sub": "uuid-cognito",
+      "email": "john@example.com",
+      "email_verified": true,
+      "name": "John Doe"
+    }
+  }
 }
 ```
 
+**Errores:**
+| Código | Error | Descripción |
+|--------|-------|-------------|
+| 400 | VALIDATION_ERROR | Email o contraseña no proporcionados |
+| 401 | INVALID_CREDENTIALS | Email o contraseña incorrectos |
+| 403 | EMAIL_NOT_CONFIRMED | Email no confirmado |
+| 500 | INTERNAL_SERVER_ERROR | Error en el login |
+
 ---
 
-### DELETE /ai/chats/:id
-Elimina un historial de chat.
+### GET /auth/login/url
+Obtiene la URL de login OAuth2 de AWS Cognito (flujo alternativo con Hosted UI).
 
-**Path Parameters:**
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| id | string | ID del chat |
+**Acceso:** Público
 
 **Respuesta (200):**
 ```json
 {
   "success": true,
-  "message": "Chat deleted successfully",
-  "data": null,
-  "timestamp": "2025-11-20T10:30:00.000Z"
+  "data": {
+    "loginUrl": "https://your-domain.auth.us-east-1.amazoncognito.com/login?client_id=xxx&response_type=code&scope=openid+profile+email&redirect_uri=xxx&state=xxx",
+    "state": "abc123"
+  },
+  "message": "Redirect to this URL to login with Cognito"
 }
 ```
+
+**Errores:**
+| Código | Error | Descripción |
+|--------|-------|-------------|
+| 500 | INTERNAL_SERVER_ERROR | Error al generar la URL de login |
 
 ---
 
-## Asistente de Creación de Cursos
+### GET /auth/callback
+Callback de AWS Cognito después del login OAuth2. Intercambia el código de autorización por tokens.
 
-### POST /ai/course-assistant
-Genera la estructura completa de un curso (módulos y lecciones) a partir de una idea.
+**Acceso:** Público
 
-**Request Body:**
-| Campo | Tipo | Requerido | Descripción |
-|-------|------|----------|-------------|
-| `idea` | string | Sí | El concepto central o tema del curso. |
-| `guide` | string | Sí | Pautas estructurales, audiencia objetivo o requisitos específicos. |
-| `model` | string | No | El modelo de IA a utilizar. Si no se envía, usa el configurado por defecto. |
-
-**Ejemplo:**
-```json
-{
-  "idea": "Curso de Fotografía para Principiantes",
-  "guide": "Enfocado en uso de cámaras DSLR y composición básica. 4 módulos principales."
-}
-```
+**Query Parameters:**
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| code | string | Sí | Código de autorización de Cognito |
 
 **Respuesta (200):**
 ```json
 {
-  "response": "Título del Curso: Fotografía Digital para Principiantes\n\nMódulo 1: Fundamentos de la Fotografía\n- Lección 1.1: Introducción a las cámaras DSLR\n- Lección 1.2: Tipos de lentes y sus usos...",
-  "timestamp": "2025-11-20T10:30:00.000Z"
+  "success": true,
+  "data": {
+    "accessToken": "eyJraWQiOiJ...",
+    "idToken": "eyJraWQiOiJ...",
+    "refreshToken": "eyJjdHkiOiJ...",
+    "expiresIn": 3600,
+    "tokenType": "Bearer",
+    "user": {
+      "sub": "uuid-cognito",
+      "email": "user@example.com",
+      "email_verified": true,
+      "name": "John Doe"
+    }
+  },
+  "message": "Authentication successful"
 }
 ```
+
+**Errores:**
+| Código | Error | Descripción |
+|--------|-------|-------------|
+| 400 | BAD_REQUEST | Código de autorización no proporcionado |
+| 500 | AUTHENTICATION_FAILED | Fallo en la autenticación |
 
 ---
 
-## 🛠️ Configuración del Servicio de IA
+### GET /auth/logout
+Obtiene la URL de logout de AWS Cognito.
 
-### Prerequisitos
-Para que el servicio de IA funcione correctamente:
+**Acceso:** Público
 
-1. **Instalar Ollama**: Visita [ollama.com](https://ollama.com) y descarga la versión para tu sistema operativo.
-
-2. **Descargar el Modelo**: Si tu `.env` dice `OLLAMA_MODEL=llama3.2`, ejecuta:
-```bash
-ollama pull llama3.2
+**Respuesta (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "logoutUrl": "https://your-domain.auth.us-east-1.amazoncognito.com/logout?client_id=xxx&logout_uri=xxx"
+  },
+  "message": "Redirect to this URL to logout"
+}
 ```
 
-3. **Verificar que Ollama está corriendo**: Asegúrate de que Ollama esté activo visitando `http://127.0.0.1:11434`.
-
-4. **Iniciar el servidor**:
-```bash
-pnpm dev
-```
+**Errores:**
+| Código | Error | Descripción |
+|--------|-------|-------------|
+| 500 | INTERNAL_SERVER_ERROR | Error al generar la URL de logout |
 
 ---
 
-## 📦 Modelos de Datos Principales
+### GET /auth/me
+Obtiene la información del usuario autenticado.
 
-### Usuario (User)
-```typescript
-interface User {
-  userId: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: 'STUDENT' | 'INSTRUCTOR' | 'ADMIN';
-  createdAt: Date;
+**Acceso:** Privado (requiere token en header Authorization)
+
+**Headers:**
+| Header | Tipo | Requerido | Descripción |
+|--------|------|-----------|-------------|
+| Authorization | string | Sí | Bearer token (ej: `Bearer eyJraWQiOiJ...`) |
+
+**Respuesta (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "sub": "uuid-cognito",
+    "email": "user@example.com",
+    "email_verified": true,
+    "name": "John Doe"
+  },
+  "message": "User information retrieved successfully"
 }
 ```
 
-### Curso (Course)
-```typescript
-interface Course {
-  idCourse: string;
-  title: string;
-  description: string;
-  price: number;
-  level: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'EXPERT';
-  instructorId: string;
-  active: boolean;
-  status: 'DRAFT' | 'UNDER_REVIEW' | 'PUBLISHED' | 'ARCHIVED';
-  aiGenerated: boolean;
-  averageReviews: number;
-  totalLessons: number;
-  durationHours: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
-
-### Lección (Lesson)
-```typescript
-interface Lesson {
-  idLesson: string;
-  sectionId: string;
-  title: string;
-  description: string;
-  lessonType: 'THEORY' | 'PRACTICE' | 'MIXED' | 'PROJECT' | 'CASE_STUDY' | 'DISCUSSION';
-  durationMinutes: number;
-  order: number;
-  active: boolean;
-  aiGenerated: boolean;
-  estimatedDifficulty: number;
-  createdAt: Date;
-}
-```
-
-### Contenido de Lección (LessonContent)
-```typescript
-interface LessonContent {
-  idLessonContent: string;
-  lessonId: string;
-  version: number;
-  metadata: Json;
-  difficultyLevel: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'EXPERT';
-  learningTechnique: 'VISUAL' | 'AUDITORY' | 'KINESTHETIC' | 'READING_WRITING';
-  contentType: 'TEXT' | 'VIDEO' | 'AUDIO' | 'INTERACTIVE' | 'QUIZ' | 'EXERCISE';
-  active: boolean;
-  isCurrentVersion: boolean;
-  aiGenerated: boolean;
-  createdAt: Date;
-}
-```
-
-### Cuestionario (Quiz)
-```typescript
-interface Quiz {
-  idQuiz: string;
-  sectionId: string;
-  title: string;
-  description: string;
-  durationMinutes: number;
-  active: boolean;
-  aiGenerated: boolean;
-  difficultyDistribution: Json;
-  adaptativeLogic: Json;
-  createdAt: Date;
-}
-```
-
-### Recurso (Resource)
-```typescript
-interface Resource {
-  idResource: string;
-  entityReference: string;
-  discriminant: 'SUBMISSION' | 'QUIZ_QUESTION' | 'QUIZ_OPTION' | 'LESSON' | 'COURSE';
-  name: string;
-  type: 'PDF' | 'PICTURE' | 'CODE' | 'LINK' | 'TEXT' | 'VIDEO' | 'AUDIO' | 'INTERACTIVE';
-  url: string;
-  fileSizeMb: number;
-  mimeType: string;
-  metadata: Json;
-}
-```
-
-### Reseña (Review)
-```typescript
-interface Review {
-  idReview: string;
-  userId: string;
-  courseId: string;
-  rating: number; // 1-5
-  comment: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
+**Errores:**
+| Código | Error | Descripción |
+|--------|-------|-------------|
+| 401 | UNAUTHORIZED | No autenticado o token inválido |
+| 500 | INTERNAL_SERVER_ERROR | Error al obtener información del usuario |
 
 ---
 
-## 🔧 Enums y Tipos
+### POST /auth/verify
+Verifica si un token JWT es válido.
 
-### Course Level
-```typescript
-enum CourseLevel {
-  BEGINNER = 'BEGINNER',
-  INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED',
-  EXPERT = 'EXPERT'
+**Acceso:** Público
+
+**Request Body:**
+```json
+{
+  "token": "eyJraWQiOiJ..."
 }
 ```
 
-### Course Status
-```typescript
-enum CourseStatus {
-  DRAFT = 'DRAFT',
-  UNDER_REVIEW = 'UNDER_REVIEW',
-  PUBLISHED = 'PUBLISHED',
-  ARCHIVED = 'ARCHIVED'
+**Validaciones:**
+- `token`: String requerido (JWT token)
+
+**Respuesta (200) - Token válido:**
+```json
+{
+  "success": true,
+  "data": {
+    "valid": true,
+    "user": {
+      "sub": "uuid-cognito",
+      "email": "user@example.com",
+      "email_verified": true,
+      "name": "John Doe"
+    }
+  },
+  "message": "Token is valid"
 }
 ```
 
-### Lesson Type
-```typescript
-enum LessonType {
-  THEORY = 'THEORY',
-  PRACTICE = 'PRACTICE',
-  MIXED = 'MIXED',
-  PROJECT = 'PROJECT',
-  CASE_STUDY = 'CASE_STUDY',
-  DISCUSSION = 'DISCUSSION'
-}
-```
+**Errores:**
+| Código | Error | Descripción |
+|--------|-------|-------------|
+| 400 | BAD_REQUEST | Token no proporcionado |
+| 401 | INVALID_TOKEN | Token inválido o expirado |
 
-### Resource Type
-```typescript
-enum ResourceType {
-  PDF = 'PDF',
-  PICTURE = 'PICTURE',
-  CODE = 'CODE',
-  LINK = 'LINK',
-  TEXT = 'TEXT',
-  VIDEO = 'VIDEO',
-  AUDIO = 'AUDIO',
-  INTERACTIVE = 'INTERACTIVE',
-  DIAGRAM = 'DIAGRAM',
-  SIMULATION = 'SIMULATION',
-  NOTEBOOK = 'NOTEBOOK',
-  DATASET = 'DATASET'
-}
-```
-
-### Learning Technique
-```typescript
-enum LearningTechnique {
-  VISUAL = 'VISUAL',
-  AUDITORY = 'AUDITORY',
-  KINESTHETIC = 'KINESTHETIC',
-  READING_WRITING = 'READING_WRITING'
-}
-```
-
-### Content Type
-```typescript
-enum ContentType {
-  TEXT = 'TEXT',
-  VIDEO = 'VIDEO',
-  AUDIO = 'AUDIO',
-  INTERACTIVE = 'INTERACTIVE',
-  QUIZ = 'QUIZ',
-  EXERCISE = 'EXERCISE',
-  SIMULATION = 'SIMULATION'
-}
-```
-
----
-
-## ⚠️ Códigos de Error
-
-### 400 Bad Request
+**Respuesta (401) - Token inválido:**
 ```json
 {
   "success": false,
-  "message": "Validation error: Invalid input data",
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
-### 404 Not Found
-```json
-{
-  "success": false,
-  "message": "Resource not found",
-  "timestamp": "2025-11-20T10:30:00.000Z"
-}
-```
-
-### 500 Internal Server Error
-```json
-{
-  "success": false,
-  "message": "Internal server error",
-  "timestamp": "2025-11-20T10:30:00.000Z"
+  "data": {
+    "valid": false
+  },
+  "message": "Invalid or expired token",
+  "error": "INVALID_TOKEN"
 }
 ```
 
 ---
 
-## 📝 Notas de Desarrollo
+## Servicio de Usuarios
+**Base Path:** `/api/v1`
+**Requiere Autenticación:** Sí (Header `Authorization: Bearer <token>`)
 
-1. **Paginación**: Por defecto, todas las consultas paginadas retornan 10 elementos por página con un máximo de 100.
+### Usuarios
+- `GET /users`: Obtener lista de usuarios.
+- `GET /users/id/:id`: Obtener usuario por ID.
+- `GET /users/email/:email`: Obtener usuario por email.
+- `POST /users`: Crear un nuevo usuario.
+- `POST /users/batch`: Obtener usuarios por lote.
+- `PUT /users/:id`: Actualizar usuario.
+- `DELETE /users/:id`: Eliminar usuario.
 
-2. **Ordenamiento**: Los campos válidos para ordenar dependen del recurso (ej. `title`, `createdAt`, `price`).
+### Learning Path
+- `GET /users/:id/learning-path`: Obtener ruta de aprendizaje.
+- `POST /users/:id/learning-path`: Crear ruta de aprendizaje.
+- `PUT /users/:id/learning-path`: Actualizar ruta de aprendizaje.
 
-3. **DTO Ligero vs Pesado**: El parámetro `lightDTO` permite obtener versiones simplificadas de los objetos para optimizar el rendimiento.
+### Reseñas (Reviews)
+- `GET /users/:id/reviews`: Obtener reseñas de un usuario.
+- `GET /users/instructors/:instructorId/reviews`: Obtener reseñas de un instructor.
+- `GET /users/courses/:courseId/reviews`: Obtener reseñas de un curso.
+- `POST /users/:id/reviews`: Crear reseña.
+- `PUT /users/:id/reviews/:reviewId`: Actualizar reseña.
+- `DELETE /users/:id/reviews/:reviewId`: Eliminar reseña.
 
-4. **Fechas**: Todas las fechas deben estar en formato ISO 8601 (YYYY-MM-DDTHH:mm:ss.sssZ).
+### Cuentas Vinculadas
+- `GET /users/:id/linked-accounts`: Listar cuentas vinculadas.
+- `GET /users/:id/linked-accounts/:accountId`: Obtener cuenta vinculada.
+- `POST /users/:id/linked-accounts`: Vincular cuenta.
+- `PUT /users/:id/linked-accounts/:accountId`: Actualizar cuenta vinculada.
+- `DELETE /users/:id/linked-accounts/:accountId`: Desvincular cuenta.
 
-5. **IDs**: Todos los IDs son UUID v4.
-
-6. **Validaciones**: Todas las rutas implementan validación de datos usando Zod.
-
-7. **Proxy**: Este servicio actúa como API Gateway, redirigiendo las peticiones a los microservicios correspondientes.
+### Admin (Roles)
+- `GET /admin/roles`: Listar roles.
+- `GET /admin/roles/:name`: Obtener rol por nombre.
+- `POST /admin/roles`: Crear rol.
+- `PUT /admin/roles/:name`: Actualizar rol.
+- `DELETE /admin/roles/:name`: Eliminar rol.
+- `GET /admin/assignations`: Ver asignaciones de roles.
 
 ---
 
-## 🚀 Ejemplo de Flujo Completo
+## Servicio de Cursos
+**Base Path:** `/api/v1`
+**Requiere Autenticación:** Sí (Header `Authorization: Bearer <token>`)
 
-### Crear un Curso Completo
+### Cursos
+- `GET /courses`: Listar cursos.
+- `GET /courses/:id`: Obtener curso.
+- `POST /courses`: Crear curso.
+- `PUT /courses/:id`: Actualizar curso.
+- `DELETE /courses/:id`: Eliminar curso.
 
-1. **Crear el Curso:**
-```bash
-POST /api/v1/courses
-{
-  "instructorId": "instructor-uuid",
-  "title": "Introduction to React",
-  "description": "Learn React from scratch",
-  "price": 49.99,
-  "level": "BEGINNER"
-}
-```
+### Secciones
+- `GET /courses/:courseId/sections`: Listar secciones de un curso.
+- `POST /courses/:courseId/sections`: Crear sección.
+- `PUT /courses/:courseId/sections/:sectionId`: Actualizar sección.
+- `DELETE /courses/:courseId/sections/:sectionId`: Eliminar sección.
 
-2. **Crear una Sección:**
-```bash
-POST /api/v1/courses/{courseId}/sections
-{
-  "title": "Getting Started",
-  "order": 1
-}
-```
+### Lecciones
+- `GET /sections/:sectionId/lessons`: Listar lecciones de una sección.
+- `GET /lessons/:id`: Obtener lección.
+- `POST /sections/:sectionId/lessons`: Crear lección.
+- `PUT /lessons/:id`: Actualizar lección.
+- `DELETE /lessons/:id`: Eliminar lección.
 
-3. **Crear una Lección:**
-```bash
-POST /api/v1/sections/{sectionId}/lessons
-{
-  "title": "What is React?",
-  "lessonType": "THEORY",
-  "durationMinutes": 15
-}
-```
+### Contenido de Lecciones
+- `GET /lessons/:lessonId/contents`: Listar contenidos.
+- `GET /contents/:id`: Obtener contenido.
+- `POST /lessons/:lessonId/contents`: Crear contenido.
+- `PUT /contents/:id`: Actualizar contenido.
+- `DELETE /contents/:id`: Eliminar contenido.
 
-4. **Agregar Contenido:**
-```bash
-POST /api/v1/lessons/{lessonId}/contents
-{
-  "contentType": "TEXT",
-  "metadata": { "text": "React is a JavaScript library..." },
-  "difficultyLevel": "BEGINNER"
-}
-```
+### Cuestionarios (Quizzes)
+- `GET /sections/:sectionId/quizzes`: Listar cuestionarios.
+- `GET /quizzes/:id`: Obtener cuestionario.
+- `POST /sections/:sectionId/quizzes`: Crear cuestionario.
+- `PUT /quizzes/:id`: Actualizar cuestionario.
+- `DELETE /quizzes/:id`: Eliminar cuestionario.
 
-5. **Crear un Cuestionario:**
-```bash
-POST /api/v1/sections/{sectionId}/quizzes
-{
-  "title": "React Basics Quiz",
-  "durationMinutes": 10
-}
-```
+### Asignaciones (Assignments)
+- `GET /lessons/:lessonId/assignments`: Listar asignaciones.
+- `GET /lessons/:lessonId/assignments/:assignmentId`: Obtener asignación.
+- `POST /lessons/:lessonId/assignments`: Crear asignación.
+- `PUT /lessons/:lessonId/assignments/:assignmentId`: Actualizar asignación.
+- `DELETE /lessons/:lessonId/assignments/:assignmentId`: Eliminar asignación.
+
+### Recursos
+- `GET /resources`: Listar recursos.
+- `GET /resources/:resourceId`: Obtener recurso.
+- `POST /resources`: Crear recurso.
+- `PUT /resources/:resourceId`: Actualizar recurso.
+- `DELETE /resources/:resourceId`: Eliminar recurso.
+
+### Categorías y Etiquetas
+- `GET /categories`: Listar categorías.
+- `GET /categories/:categoryId`: Obtener categoría.
+- `POST /categories`: Crear categoría.
+- `PUT /categories/:categoryId`: Actualizar categoría.
+- `DELETE /categories/:categoryId`: Eliminar categoría.
+- `GET /tags`: Listar etiquetas.
+- `POST /tags`: Crear etiqueta.
+- `DELETE /tags/:categoryId/:courseId`: Eliminar etiqueta.
+
+### Foros
+- `GET /forums`: Listar foros.
+- `GET /forums/:id`: Obtener foro.
+- `GET /courses/:courseId/forum`: Obtener foro de un curso.
+- `POST /forums`: Crear foro.
+- `PUT /forums/:id`: Actualizar foro.
+- `DELETE /forums/:id`: Eliminar foro.
+
+### Mensajes de Foro
+- `GET /forum-messages`: Listar mensajes.
+- `GET /forum-messages/:id`: Obtener mensaje.
+- `GET /forums/:forumId/messages`: Mensajes de un foro.
+- `GET /forum-messages/:parentMessageId/replies`: Respuestas a un mensaje.
+- `POST /forum-messages`: Publicar mensaje.
+- `PUT /forum-messages/:id`: Actualizar mensaje.
+- `DELETE /forum-messages/:id`: Eliminar mensaje.
+
+### Especificaciones de IA (AI Specs)
+- `GET /lessons/:lessonId/ai-specs`: Listar specs.
+- `GET /ai-specs/:id`: Obtener spec.
+- `POST /lessons/:lessonId/ai-specs`: Crear spec.
+- `PUT /ai-specs/:id`: Actualizar spec.
+- `DELETE /ai-specs/:id`: Eliminar spec.
+
+---
+
+## Servicio de IA
+**Base Path:** `/api/v1/ai`
+**Requiere Autenticación:** Sí (Header `Authorization: Bearer <token>`)
+
+### Chat
+- `POST /chat`: Enviar mensaje al chat de IA.
+  - **Body:** `{ "message": "Hola", "model": "gemini-2.0-flash" }`
+  - **Response:** `{ "response": "..." }`
+
+### Asistente de Curso
+- `POST /course-assistant`: Generar estructura de curso.
+  - **Body:** `{ "idea": "Curso de Python", "guide": "..." }`
+
+### Historial de Chat
+- `GET /chats`: Listar historiales de chat.
+- `GET /chats/:id`: Obtener un historial específico.
+- `DELETE /chats/:id`: Eliminar un historial.
 
 ---
 

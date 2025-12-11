@@ -138,6 +138,7 @@ router.delete(
 );
 
 // Public Instructors routes
+router.get("/instructors", userController.getInstructors.bind(userController));
 router.get(
 	"/instructors/:instructorId",
 	userController.getInstructorById.bind(userController),

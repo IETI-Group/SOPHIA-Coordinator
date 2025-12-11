@@ -274,13 +274,9 @@ export class CourseController {
 
 	async getContentById(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (
-				!validateParams({ contentId: req.params.contentId }, res) ||
-				!req.params.contentId
-			)
-				return;
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
 			const response = await courseService.getContentById(
-				req.params.contentId,
+				req.params.id,
 				req.query,
 				req.headers as Record<string, string>,
 			);
@@ -310,13 +306,9 @@ export class CourseController {
 
 	async updateContent(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (
-				!validateParams({ contentId: req.params.contentId }, res) ||
-				!req.params.contentId
-			)
-				return;
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
 			const response = await courseService.updateContent(
-				req.params.contentId,
+				req.params.id,
 				req.body,
 				req.headers as Record<string, string>,
 			);
@@ -328,13 +320,9 @@ export class CourseController {
 
 	async deleteContent(req: Request, res: Response, next: NextFunction) {
 		try {
-			if (
-				!validateParams({ contentId: req.params.contentId }, res) ||
-				!req.params.contentId
-			)
-				return;
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
 			await courseService.deleteContent(
-				req.params.contentId,
+				req.params.id,
 				req.headers as Record<string, string>,
 			);
 			res.status(204).send();
@@ -1055,6 +1043,95 @@ export class CourseController {
 		try {
 			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
 			const response = await courseService.deleteForumMessage(
+				req.params.id,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	// Inscriptions
+	async getInscriptions(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (
+				!validateParams({ courseId: req.params.courseId }, res) ||
+				!req.params.courseId
+			)
+				return;
+			const response = await courseService.getInscriptions(
+				req.params.courseId,
+				req.query,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async getAllInscriptions(req: Request, res: Response, next: NextFunction) {
+		try {
+			const response = await courseService.getAllInscriptions(
+				req.query,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async getInscriptionById(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const response = await courseService.getInscriptionById(
+				req.params.id,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async createInscription(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (
+				!validateParams({ courseId: req.params.courseId }, res) ||
+				!req.params.courseId
+			)
+				return;
+			const response = await courseService.createInscription(
+				req.params.courseId,
+				req.body,
+				req.headers as Record<string, string>,
+			);
+			res.status(201).json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async updateInscription(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const response = await courseService.updateInscription(
+				req.params.id,
+				req.body,
+				req.headers as Record<string, string>,
+			);
+			res.json(response.data);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async deleteInscription(req: Request, res: Response, next: NextFunction) {
+		try {
+			if (!validateParams({ id: req.params.id }, res) || !req.params.id) return;
+			const response = await courseService.deleteInscription(
 				req.params.id,
 				req.headers as Record<string, string>,
 			);
