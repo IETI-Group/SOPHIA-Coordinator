@@ -59,20 +59,23 @@ app.use(errorHandler);
 const PORT = env.port;
 app.listen(PORT, () => {
 	logger.info(`
-╔═══════════════════════════════════════════════════════════╗
-║                                                           ║
-║        SOPHIA Coordinator Service                         ║
-║        Version: 1.0.0                                     ║
-║                                                           ║
-║        Server running on port: ${PORT}                    ║
-║        Environment: ${env.nodeEnv}                        ║
-║                                                           ║
-║                                                           ║
-║        Coordinator Service: http://localhost:${PORT}/     ║
-║        User Service: ${env.userServiceUrl}                ║
-║        Course Service: ${env.courseServiceUrl}            ║
-║                                                           ║
-╚═══════════════════════════════════════════════════════════╝
+═════════════════════════════════════════════════════════════
+                                                           
+        SOPHIA Coordinator Service                         
+        Version: 1.0.0                                     
+                                                           
+        Server running on port: ${PORT}                    
+        Environment: ${env.nodeEnv}                        
+                                                           
+                                                           
+        Coordinator Service: http://localhost:${PORT}/api/v1
+        User Service: ${env.userServiceUrl}                
+        Course Service: ${env.courseServiceUrl}
+	Ai Service: ${env.aiServiceUrl}
+	Auth Service: ${env.authServiceUrl}
+				            
+                                                           
+═════════════════════════════════════════════════════════════
   `);
 });
 
